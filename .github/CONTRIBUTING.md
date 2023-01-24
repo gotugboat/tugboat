@@ -1,6 +1,6 @@
 # Contributing
 
-Welcome to Tugboat! We want to make contributing to this project as easy and transparent as possible. Contributions are [released](https://help.github.com/articles/github-terms-of-service/#6-contributions-under-repository-license) to the public under the [open source license of this project](./LICENSE).
+Welcome to Tugboat! We want to make contributing to this project as easy and transparent as possible. Contributions are [released](https://help.github.com/articles/github-terms-of-service/#6-contributions-under-repository-license) to the public under the [open source license of this project](../LICENSE).
 
 ## Code of Conduct
 Please make sure to read and observe the [Code of Conduct](./CODE_OF_CONDUCT.md).
