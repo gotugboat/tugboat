@@ -1,0 +1,95 @@
+# Labels config file
+---
+# Status
+- name: status/approved
+  color: 33ee59
+  description: Indicates a PR has been approved by an approver and is ready to merge
+- name: status/blocked
+  color: fd2d2d
+  description: There is another issue that needs to be resolved first
+- name: status/info-needed
+  color: c9cf10
+  description: Needs more information before it can be verified and resolved
+- name: status/needs-review
+  color: e99695
+  description: Has PR attached to it which needs to be reviewed
+- name: status/waiting-update
+  color: eeec12
+  description: Further information is requested
+- name: status/waiting-triage
+  color: e67e22
+  description: Has not been triaged & therefore, not ready for work
+
+# Triage
+- name: triage/accepted
+  color: bedcba
+  description: Indicates an issue or PR is ready to be actively worked on
+- name: triage/needs-information
+  color: bedcba
+  description: Indicates an issue needs more information in order to work on it
+
+# Type
+- name: type/bug
+  color: 0075ca
+  description: Something isn't working
+- name: type/upstream-bug
+  color: 0075ca
+  description: Result of an upstream issue
+- name: type/feature
+  color: 0075ca
+  description: New feature or request
+- name: type/enhancement
+  color: 0075ca
+  description: Builds upon existing functionality such as simplifying and refactors
+- name: type/chore
+  color: 0075ca
+  description: Includes tool changes, configuration changes, and other similar small changes
+- name: type/documentation
+  color: 0075ca
+  description: Improvements or additions to documentation
+- name: type/security
+  color: 0075ca
+  description: Involves a security issue
+
+# Platform
+- name: platform/ci-cd
+  color: a569bd
+  description: Issues related to CI/CD workflows
+
+# Release Notes
+- name: release-note/new-feature
+  color: 006B75
+- name: release-note/enhancement
+  color: 006B75
+- name: release-note/update
+  color: 006B75
+- name: release-note/docs
+  color: 006B75
+- name: release-note/community
+  color: 006B75
+- name: release-note/breaking-change
+  color: 006B75
+- name: release-note/deprecation
+  color: 006B75
+- name: release-note/ignore-for-release
+  color: 006B75
+
+# Ungrouped Labels
+- name: duplicate
+  color: cfd3d7
+  description: This issue or pull request already exists
+- name: good first issue
+  color: 7057ff
+  description: Good for newcomers
+- name: help wanted
+  color: 008672
+  description: Extra attention is needed
+- name: invalid
+  color: e4e669
+  description: This doesn't seem right
+- name: question
+  color: d876e3
+  description: Further information is requested
+- name: wontfix
+  color: ffffff
+  description: This will not be worked on
