@@ -1,4 +1,14 @@
+# System files
+.DS_Store
+
+# IDEs and text editor files
+.vscode/
+.idea/
+*.iml
+
 # Binaries for programs and plugins
+**/dist
+**/release
 *.exe
 *.exe~
 *.dll
