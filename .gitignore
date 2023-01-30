@@ -9,6 +9,7 @@
 # Binaries for programs and plugins
 **/dist
 **/release
+**/bin
 *.exe
 *.exe~
 *.dll
