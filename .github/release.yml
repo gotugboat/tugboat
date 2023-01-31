@@ -1,0 +1,33 @@
+# .github/release.yml
+
+changelog:
+  exclude:
+    labels:
+      - release-note/ignore-for-release
+    authors:
+      - octocat
+  categories:
+    - title: New Features 🎉
+      labels:
+        - release-note/new-feature
+    - title: Enhancements 🚀
+      labels:
+        - release-note/enhancement
+    - title: Dependency updates ⬆️
+      labels:
+        - release-note/update
+    - title: Documentation updates 🗄️
+      labels:
+        - release-note/docs
+    - title: Community updates 🧑🏻‍🤝‍🧑🏾
+      labels:
+        - release-note/community
+    - title: Breaking Changes 🛠
+      labels:
+        - release-note/breaking-change
+    - title: Deprecations ❌
+      labels:
+        - release-note/deprecation
+    - title: Other Changes
+      labels:
+        - "*"
