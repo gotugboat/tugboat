@@ -1,12 +1,13 @@
 package root
 
 import (
+	"tugboat/internal/pkg/flags"
 	"tugboat/internal/version"
 
 	"github.com/spf13/cobra"
 )
 
-func NewRootCommand() *cobra.Command {
+func NewRootCommand(globalFlags *flags.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "tugboat",
 		Version:       version.GetFullVersionWithArch(),
@@ -15,6 +16,10 @@ func NewRootCommand() *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
+
+	// Assign global flags
+	flags.AddFlags(cmd, globalFlags)
+	flags.Bind(cmd, globalFlags)
 
 	return cmd
 }

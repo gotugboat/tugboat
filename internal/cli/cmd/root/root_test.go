@@ -2,10 +2,12 @@ package root
 
 import (
 	"testing"
+	"tugboat/internal/pkg/flags"
 )
 
 func TestRootCommand(t *testing.T) {
-	cmd := NewRootCommand()
+	globalFlags := flags.NewGlobalFlagGroup()
+	cmd := NewRootCommand(globalFlags)
 
 	// validate the description strings
 	expected := "A tool to build and publish multi-architecture container images"
@@ -27,8 +29,16 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate what flags are attached to this command
-	if ok := cmd.HasFlags(); ok {
-		t.Error("expected to see o flags, but there are flags")
+	if ok := cmd.HasLocalFlags(); !ok {
+		t.Error("expected to see flags, but there are none")
+	}
+
+	if _, err := cmd.Flags().GetBool("dry-run"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := cmd.Flags().GetBool("debug"); err != nil {
+		t.Error(err)
 	}
 
 	// validate command settings
