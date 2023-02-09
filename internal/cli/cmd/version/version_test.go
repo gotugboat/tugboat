@@ -2,10 +2,12 @@ package version
 
 import (
 	"testing"
+	"tugboat/internal/pkg/flags"
 )
 
 func TestVersionCommand(t *testing.T) {
-	cmd := NewVersionCommand()
+	globalFlags := flags.NewGlobalFlagGroup()
+	cmd := NewVersionCommand(globalFlags)
 
 	// validate the description string
 	expected := "Show the Tugboat version information"
