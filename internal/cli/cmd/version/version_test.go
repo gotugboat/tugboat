@@ -2,10 +2,14 @@ package version
 
 import (
 	"testing"
+	"tugboat/internal/pkg/flags"
+
+	"github.com/spf13/pflag"
 )
 
 func TestVersionCommand(t *testing.T) {
-	cmd := NewVersionCommand()
+	globalFlags := flags.NewGlobalFlagGroup()
+	cmd := NewVersionCommand(globalFlags)
 
 	// validate the description string
 	expected := "Show the Tugboat version information"
@@ -31,6 +35,18 @@ func TestVersionCommand(t *testing.T) {
 		t.Error("expected to see flags, but there are none")
 	}
 
+	// validate the number of flags
+	expectedFlagCount := 1
+	actualFlagCount := 0
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		actualFlagCount++
+	})
+
+	if actualFlagCount != expectedFlagCount {
+		t.Errorf("expected %v flags, got %v", expectedFlagCount, actualFlagCount)
+	}
+
+	// validate each flag
 	_, err := cmd.Flags().GetBool("short")
 	if err != nil {
 		t.Error(err)
