@@ -3,6 +3,8 @@ package root
 import (
 	"testing"
 	"tugboat/internal/pkg/flags"
+
+	"github.com/spf13/pflag"
 )
 
 func TestRootCommand(t *testing.T) {
@@ -33,6 +35,18 @@ func TestRootCommand(t *testing.T) {
 		t.Error("expected to see flags, but there are none")
 	}
 
+	// validate the number of flags
+	expectedFlagCount := 2
+	actualFlagCount := 0
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		actualFlagCount++
+	})
+
+	if actualFlagCount != expectedFlagCount {
+		t.Errorf("expected %v flags, got %v", expectedFlagCount, actualFlagCount)
+	}
+
+	// validate each flag
 	if _, err := cmd.Flags().GetBool("dry-run"); err != nil {
 		t.Error(err)
 	}
