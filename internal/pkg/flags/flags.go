@@ -60,6 +60,10 @@ func ToOptions(globalFlags *GlobalFlagGroup, f ...FlagGroup) *Options {
 		switch v := flagGroup.(type) {
 		case *BuildFlagGroup:
 			opts.Build = v.ToOptions()
+		case *ImageFlagGroup:
+			opts.Image = v.ToOptions()
+		case *ManifestCreateFlagGroup:
+			opts.Manifest.Create = v.ToOptions()
 		case *VersionFlagGroup:
 			opts.Version = v.ToOptions()
 		}
