@@ -55,6 +55,22 @@ func TestRootCommand(t *testing.T) {
 		t.Error(err)
 	}
 
+	if _, err := cmd.Flags().GetString("docker-registry"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := cmd.Flags().GetString("docker-namespace"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := cmd.Flags().GetString("docker-user"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := cmd.Flags().GetString("docker-pass"); err != nil {
+		t.Error(err)
+	}
+
 	// validate command settings
 	if cmd.SilenceUsage != true {
 		t.Error("SilenceUsage should be false")
