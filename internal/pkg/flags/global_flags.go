@@ -66,15 +66,30 @@ var (
 	}
 )
 
+type DockerFlagGroup struct {
+	IsExperimentalFlag *Flag
+	RegistryFlag       *Flag
+	NamespaceFlag      *Flag
+	UsernameFlag       *Flag
+	PasswordFlag       *Flag
+}
+
 type GlobalFlagGroup struct {
-	DebugFlag  *Flag
-	DryRunFlag *Flag
+	DebugFlag       *Flag
+	DryRunFlag      *Flag
+	DockerFlagGroup *DockerFlagGroup
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
 	return &GlobalFlagGroup{
 		DebugFlag:  &DebugFlag,
 		DryRunFlag: &DryRunFlag,
+		DockerFlagGroup: &DockerFlagGroup{
+			RegistryFlag:  &DockerRegistryFlag,
+			NamespaceFlag: &DockerNamespaceFlag,
+			UsernameFlag:  &DockerUsernameFlag,
+			PasswordFlag:  &DockerPasswordFlag,
+		},
 	}
 }
 
@@ -83,13 +98,19 @@ func (f *GlobalFlagGroup) Name() string {
 }
 
 func (f *GlobalFlagGroup) Flags() []*Flag {
-	return []*Flag{f.DebugFlag, f.DryRunFlag}
+	return []*Flag{f.DebugFlag, f.DryRunFlag, f.DockerFlagGroup.RegistryFlag, f.DockerFlagGroup.NamespaceFlag, f.DockerFlagGroup.UsernameFlag, f.DockerFlagGroup.PasswordFlag}
 }
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 	opts := GlobalOptions{
 		Debug:  getBool(f.DebugFlag),
 		DryRun: getBool(f.DryRunFlag),
+		Docker: DockerOptions{
+			Registry:  getString(f.DockerFlagGroup.RegistryFlag),
+			Namespace: getString(f.DockerFlagGroup.NamespaceFlag),
+			Username:  getString(f.DockerFlagGroup.UsernameFlag),
+			Password:  getString(f.DockerFlagGroup.PasswordFlag),
+		},
 		Version: Version{
 			App: version.GetVersion(),
 		},
