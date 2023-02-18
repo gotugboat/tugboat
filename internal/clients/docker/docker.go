@@ -14,7 +14,10 @@ func NewClientWithOpts(opts ...client.Opt) (*client.Client, error) {
 }
 
 func NewClientFromEnv() (*client.Client, error) {
-	client, err := NewClientWithOpts(client.FromEnv)
+	client, err := NewClientWithOpts(
+		client.FromEnv,
+		client.WithAPIVersionNegotiation(),
+	)
 	if err != nil {
 		return nil, err
 	}
