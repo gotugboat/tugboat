@@ -58,8 +58,8 @@ func ToOptions(globalFlags *GlobalFlagGroup, f ...FlagGroup) *Options {
 
 	for _, flagGroup := range f {
 		switch v := flagGroup.(type) {
-		// case *BuildFlagGroup:
-		// 	opts.Build = v.ToOptions()
+		case *BuildFlagGroup:
+			opts.Build = v.ToOptions()
 		case *VersionFlagGroup:
 			opts.Version = v.ToOptions()
 		}

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"tugboat/internal/cli/cmd/build"
 	"tugboat/internal/cli/cmd/root"
 	"tugboat/internal/cli/cmd/version"
 	"tugboat/internal/pkg/flags"
@@ -21,6 +22,9 @@ func NewCli() *cobra.Command {
 // Adds all the commands to the given root command
 func addCommands(cmd *cobra.Command, globalFlags *flags.GlobalFlagGroup) {
 	cmd.AddCommand(
+		// build
+		build.NewBuildCommand(globalFlags),
+
 		// version
 		version.NewVersionCommand(globalFlags),
 	)

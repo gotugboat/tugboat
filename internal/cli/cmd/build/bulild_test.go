@@ -1,4 +1,4 @@
-package root
+package build
 
 import (
 	"testing"
@@ -7,17 +7,17 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func TestRootCommand(t *testing.T) {
+func TestBuildCommand(t *testing.T) {
 	globalFlags := flags.NewGlobalFlagGroup()
-	cmd := NewRootCommand(globalFlags)
+	cmd := NewBuildCommand(globalFlags)
 
 	// validate the description strings
-	expected := "A tool to build and publish multi-architecture container images"
+	expected := "Build an image from a Dockerfile"
 	if expected != cmd.Long {
 		t.Errorf("expected %v, got %v", expected, cmd.Long)
 	}
 
-	expected = "Build multi-arch images"
+	expected = "Build a container"
 	if expected != cmd.Short {
 		t.Errorf("expected %v, got %v", expected, cmd.Long)
 	}
@@ -36,7 +36,7 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate the number of flags
-	expectedFlagCount := 6
+	expectedFlagCount := 7
 	actualFlagCount := 0
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
 		actualFlagCount++
@@ -47,36 +47,31 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate each flag
-	if _, err := cmd.Flags().GetBool("dry-run"); err != nil {
+	if _, err := cmd.Flags().GetStringSlice("build-args"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetBool("debug"); err != nil {
+	if _, err := cmd.Flags().GetString("context"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-registry"); err != nil {
+	if _, err := cmd.Flags().GetString("file"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-namespace"); err != nil {
+	if _, err := cmd.Flags().GetStringSlice("tag"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-user"); err != nil {
+	if _, err := cmd.Flags().GetBool("push"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-pass"); err != nil {
+	if _, err := cmd.Flags().GetBool("pull"); err != nil {
 		t.Error(err)
 	}
 
-	// validate command settings
-	if cmd.SilenceUsage != true {
-		t.Error("SilenceUsage should be false")
-	}
-
-	if cmd.SilenceErrors != true {
-		t.Error("SilenceErrors should be false")
+	if _, err := cmd.Flags().GetBool("no-cache"); err != nil {
+		t.Error(err)
 	}
 }
