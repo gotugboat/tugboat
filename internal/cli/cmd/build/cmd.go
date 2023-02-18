@@ -34,7 +34,7 @@ func NewBuildCommand(globalFlags *flags.GlobalFlagGroup) *cobra.Command {
 var buildDescription = `Build an image from a Dockerfile`
 
 func runBuild(opts *flags.Options) error {
-	log.Debugf("Build Options: %+v\n", opts)
+	log.Debugf("Build Options: %+v", opts)
 
 	ctx := context.Background()
 	client, err := docker.NewClientFromEnv()
