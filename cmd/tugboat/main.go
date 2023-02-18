@@ -11,7 +11,7 @@ func main() {
 	cli := commands.NewCli()
 
 	if err := cli.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
