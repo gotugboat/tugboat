@@ -35,3 +35,14 @@ func createManifest(opts *flags.Options, args []string) error {
 
 	return nil
 }
+
+func getManifestTags(opts *flags.Options) ([]string, error) {
+	// build the list of manifests
+	var manifestTags []string
+	manifestTags = append(manifestTags, opts.Manifest.Create.Tags...)
+	if opts.Manifest.Create.Latest {
+		manifestTags = append(manifestTags, "latest")
+	}
+
+	return manifestTags, nil
+}
