@@ -1,7 +1,10 @@
 package manifest
 
 import (
+	"context"
 	"tugboat/internal/cli"
+	"tugboat/internal/clients/docker"
+	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
 
 	log "github.com/sirupsen/logrus"
@@ -33,6 +36,37 @@ func createManifest(opts *flags.Options, args []string) error {
 	log.Debugf("Manifest Create Options: %+v", opts)
 	log.Debugf("Manifest Create Args: %+v", args)
 
+	ctx := context.Background()
+	client, err := docker.NewClientFromEnv()
+	if err != nil {
+		return err
+	}
+
+	manifestTags, err := getManifestTags(opts)
+	if err != nil {
+		return err
+	}
+
+	manifestCreateOpts := image.ManifestCreateOptions{
+		ManifestList:           args[0],
+		ManifestTags:           manifestTags,
+		Push:                   opts.Manifest.Create.Push,
+		SupportedArchitectures: opts.Image.SupportedArchitectures,
+		Registry: image.NewRegistry(
+			opts.Global.Docker.Registry,
+			opts.Global.Docker.Namespace,
+			opts.Global.Docker.Username,
+			opts.Global.Docker.Password,
+		),
+		Official:   opts.Global.Official,
+		DryRun:     opts.Global.DryRun,
+		Debug:      opts.Global.Debug,
+		ArchOption: flags.DefaultArchOption,
+	}
+
+	if err := image.ManifestCreate(ctx, client, manifestCreateOpts); err != nil {
+		return err
+	}
 	return nil
 }
 
