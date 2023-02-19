@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"strings"
 	"testing"
 	"tugboat/internal/pkg/flags"
 
@@ -56,5 +57,25 @@ func Test_newCreateCommand(t *testing.T) {
 
 	if _, err := cmd.Flags().GetStringSlice("architectures"); err != nil {
 		t.Error(err)
+	}
+}
+
+func Test_getManifestTags(t *testing.T) {
+	opts := flags.Options{
+		Manifest: flags.ManifestOptions{
+			Create: flags.ManifestCreateOptions{
+				Latest: true,
+				Tags:   []string{"one", "two"},
+			},
+		},
+	}
+
+	manifestTags, _ := getManifestTags(&opts)
+
+	expectedTags := "one two latest"
+	actualTags := strings.Join(manifestTags, " ")
+
+	if expectedTags != actualTags {
+		t.Errorf("expected tags '%v', got '%v'", expectedTags, actualTags)
 	}
 }
