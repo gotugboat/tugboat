@@ -125,13 +125,7 @@ func ManifestCreate(ctx context.Context, client *client.Client, opts ManifestCre
 	}
 
 	// logout of the registry
-	logoutOpts := &DockerLogoutOptions{
-		ServerAddress: opts.Registry.ServerAddress,
-		Username:      opts.Registry.User.Name,
-		Password:      opts.Registry.User.Password,
-		DryRun:        opts.DryRun,
-	}
-	if err := dockerLogout(ctx, logoutOpts); err != nil {
+	if err := dockerLogout(ctx, opts.Registry.ServerAddress, opts.DryRun); err != nil {
 		return err
 	}
 

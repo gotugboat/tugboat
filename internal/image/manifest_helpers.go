@@ -23,8 +23,6 @@ type DockerLoginOptions struct {
 	DryRun        bool
 }
 
-type DockerLogoutOptions DockerLoginOptions
-
 type PushManifestOptions struct {
 	Purge  bool
 	DryRun bool
@@ -55,14 +53,14 @@ func dockerLogin(ctx context.Context, opts *DockerLoginOptions) error {
 	return nil
 }
 
-func dockerLogout(ctx context.Context, opts *DockerLogoutOptions) error {
-	log.Infof("Logging out of %v", opts.ServerAddress)
+func dockerLogout(ctx context.Context, registry string, isDryRun bool) error {
+	log.Infof("Logging out of %v", registry)
 
-	if opts.DryRun {
+	if isDryRun {
 		return nil
 	}
 
-	loginOutCmd := []string{"logout", opts.ServerAddress}
+	loginOutCmd := []string{"logout", registry}
 
 	output, err := exec.Command("docker", loginOutCmd...).Output()
 	if err != nil {
