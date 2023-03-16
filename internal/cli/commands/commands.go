@@ -2,6 +2,7 @@ package commands
 
 import (
 	"tugboat/internal/cli/cmd/build"
+	"tugboat/internal/cli/cmd/manifest"
 	"tugboat/internal/cli/cmd/root"
 	"tugboat/internal/cli/cmd/version"
 	"tugboat/internal/pkg/flags"
@@ -24,6 +25,9 @@ func addCommands(cmd *cobra.Command, globalFlags *flags.GlobalFlagGroup) {
 	cmd.AddCommand(
 		// build
 		build.NewBuildCommand(globalFlags),
+
+		// manifest
+		manifest.NewManifestCommand(globalFlags),
 
 		// version
 		version.NewVersionCommand(globalFlags),
