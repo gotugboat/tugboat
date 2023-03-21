@@ -4,7 +4,7 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gotugboat/tugboat)
 ![GitHub](https://img.shields.io/github/license/gotugboat/tugboat?color=blue)
 
-Tugboat is an open source command-line tool for building multi-architecture container images. Supported on popular platforms, Tugboat simplifies the process of creating images for different architectures. Create and deploy your images to popular container registries like Docker Hub, Quay (and more), or a self hosted private registry using just a few simple commands.
+Tugboat is an open source command-line tool for building multi-architecture container images. Supported on popular platforms, Tugboat simplifies the process of creating images for different architectures. Create and deploy your images to popular container registries like Docker Hub, Quay, and more; or a self hosted private registry using just a few simple commands.
 
 > Please note that the `main` branch may be in an unstable or even broken state during development. To get a stable version of the binary, see the [releases](https://github.com/gotugboat/tugboat/releases) page to download the latest version.
 
