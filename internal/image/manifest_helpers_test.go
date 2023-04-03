@@ -9,13 +9,13 @@ import (
 )
 
 var (
-	image = "image"
-	tag   = "tag"
+	image       = "image"
+	manifestTag = "tag"
 )
 
 var basicCreateOpts = ManifestCreateOptions{
 	ManifestList:           image,
-	ManifestTags:           []string{tag},
+	ManifestTags:           []string{manifestTag},
 	Push:                   false,
 	SupportedArchitectures: []string{"arm64"},
 	Registry: NewRegistry(
@@ -103,7 +103,7 @@ func Test_validateCommand(t *testing.T) {
 }
 
 func Test_getCreateArgs(t *testing.T) {
-	imageName := fmt.Sprintf("%s:%s", image, tag)
+	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
 	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
@@ -119,7 +119,7 @@ func Test_getCreateArgs(t *testing.T) {
 }
 
 func Test_getPushArgs(t *testing.T) {
-	imageName := fmt.Sprintf("%s:%s", image, tag)
+	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
 	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
@@ -136,7 +136,7 @@ func Test_getPushArgs(t *testing.T) {
 
 func Test_getAnnotateCommands(t *testing.T) {
 
-	imageName := fmt.Sprintf("%s:%s", image, tag)
+	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
 	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
@@ -154,7 +154,7 @@ func Test_getAnnotateCommands(t *testing.T) {
 }
 
 func Test_getRmArgs(t *testing.T) {
-	imageName := fmt.Sprintf("%s:%s", image, tag)
+	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
 	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
