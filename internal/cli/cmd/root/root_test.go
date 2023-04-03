@@ -47,6 +47,10 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate each flag
+	if _, err := cmd.Flags().GetString("config"); err != nil {
+		t.Error(err)
+	}
+
 	if _, err := cmd.Flags().GetBool("dry-run"); err != nil {
 		t.Error(err)
 	}
@@ -68,6 +72,10 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	if _, err := cmd.Flags().GetString("docker-pass"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := cmd.Flags().GetBool("official"); err != nil {
 		t.Error(err)
 	}
 
