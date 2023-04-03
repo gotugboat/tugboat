@@ -64,6 +64,8 @@ func ToOptions(globalFlags *GlobalFlagGroup, f ...FlagGroup) *Options {
 			opts.Image = v.ToOptions()
 		case *ManifestCreateFlagGroup:
 			opts.Manifest.Create = v.ToOptions()
+		case *TagFlagGroup:
+			opts.Tag = v.ToOptions()
 		case *VersionFlagGroup:
 			opts.Version = v.ToOptions()
 		}
