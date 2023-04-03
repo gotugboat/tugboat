@@ -36,7 +36,7 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate the number of flags
-	expectedFlagCount := 6
+	expectedFlagCount := 8
 	actualFlagCount := 0
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
 		actualFlagCount++
@@ -47,6 +47,10 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate each flag
+	if _, err := cmd.Flags().GetString("config"); err != nil {
+		t.Error(err)
+	}
+
 	if _, err := cmd.Flags().GetBool("dry-run"); err != nil {
 		t.Error(err)
 	}
@@ -68,6 +72,10 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	if _, err := cmd.Flags().GetString("docker-pass"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := cmd.Flags().GetBool("official"); err != nil {
 		t.Error(err)
 	}
 

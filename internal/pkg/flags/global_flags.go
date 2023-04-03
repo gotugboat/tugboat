@@ -1,6 +1,8 @@
 package flags
 
 import (
+	"context"
+	"tugboat/internal/pkg/git"
 	"tugboat/internal/version"
 )
 
@@ -75,21 +77,25 @@ type DockerFlagGroup struct {
 }
 
 type GlobalFlagGroup struct {
+	ConfigFileFlag  *Flag
 	DebugFlag       *Flag
 	DryRunFlag      *Flag
 	DockerFlagGroup *DockerFlagGroup
+	OfficialFlag    *Flag
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
 	return &GlobalFlagGroup{
-		DebugFlag:  &DebugFlag,
-		DryRunFlag: &DryRunFlag,
+		ConfigFileFlag: &ConfigFileFlag,
+		DebugFlag:      &DebugFlag,
+		DryRunFlag:     &DryRunFlag,
 		DockerFlagGroup: &DockerFlagGroup{
 			RegistryFlag:  &DockerRegistryFlag,
 			NamespaceFlag: &DockerNamespaceFlag,
 			UsernameFlag:  &DockerUsernameFlag,
 			PasswordFlag:  &DockerPasswordFlag,
 		},
+		OfficialFlag: &OfficialFlag,
 	}
 }
 
@@ -98,18 +104,33 @@ func (f *GlobalFlagGroup) Name() string {
 }
 
 func (f *GlobalFlagGroup) Flags() []*Flag {
-	return []*Flag{f.DebugFlag, f.DryRunFlag, f.DockerFlagGroup.RegistryFlag, f.DockerFlagGroup.NamespaceFlag, f.DockerFlagGroup.UsernameFlag, f.DockerFlagGroup.PasswordFlag}
+	return []*Flag{f.ConfigFileFlag, f.DebugFlag, f.DryRunFlag, f.OfficialFlag, f.DockerFlagGroup.RegistryFlag, f.DockerFlagGroup.NamespaceFlag, f.DockerFlagGroup.UsernameFlag, f.DockerFlagGroup.PasswordFlag}
 }
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
+	ctx := context.TODO()
+	gitFullCommit, _ := git.Clean(git.Run(ctx, "rev-parse HEAD"))
+	gitShortCommit, _ := git.Clean(git.Run(ctx, "log -1 --pretty=%h"))
+	gitBranch, _ := git.Clean(git.Run(ctx, "rev-parse --abbrev-ref HEAD"))
+	gitTag, _ := git.Clean(git.Run(ctx, "describe --tags"))
+
 	opts := GlobalOptions{
-		Debug:  getBool(f.DebugFlag),
-		DryRun: getBool(f.DryRunFlag),
+		ConfigFile: getString(f.ConfigFileFlag),
+		Debug:      getBool(f.DebugFlag),
+		DryRun:     getBool(f.DryRunFlag),
 		Docker: DockerOptions{
 			Registry:  getString(f.DockerFlagGroup.RegistryFlag),
 			Namespace: getString(f.DockerFlagGroup.NamespaceFlag),
 			Username:  getString(f.DockerFlagGroup.UsernameFlag),
 			Password:  getString(f.DockerFlagGroup.PasswordFlag),
+		},
+		Official: getBool(f.OfficialFlag),
+		Git: Git{
+			Branch:      gitBranch,
+			Commit:      gitFullCommit,
+			FullCommit:  gitFullCommit,
+			ShortCommit: gitShortCommit,
+			Tag:         gitTag,
 		},
 		Version: Version{
 			App: version.GetVersion(),
