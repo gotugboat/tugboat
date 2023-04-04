@@ -9,7 +9,7 @@ func TestNewCli(t *testing.T) {
 
 	// validate the number of commands attached to the cli
 	commands := cli.Commands()
-	expectedNumCommands := 3 // the default completion and help commands are not counted
+	expectedNumCommands := 4 // the default completion and help commands are not counted
 	actualNumCommands := len(commands)
 	if actualNumCommands != expectedNumCommands {
 		t.Errorf("expected commands %v, got %v", expectedNumCommands, actualNumCommands)
@@ -17,9 +17,10 @@ func TestNewCli(t *testing.T) {
 
 	// validate what commands are attached to the cli (the default completion and help commands are not counted)
 	expectedCommands := []string{
-		"version",
 		"build",
 		"manifest",
+		"tag",
+		"version",
 	}
 	for _, command := range commands {
 		if !contains(expectedCommands, command.Name()) {
