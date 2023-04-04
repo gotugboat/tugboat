@@ -1,8 +1,13 @@
 package flags
 
 import (
+	"fmt"
+	"os"
+	"os/exec"
+	"regexp"
 	"strings"
 	"time"
+	"tugboat/internal/pkg/slices"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -95,4 +100,107 @@ func getBool(flag *Flag) bool {
 		return false
 	}
 	return viper.GetBool(flag.ConfigName)
+}
+
+type sanitizedInput struct {
+	RawInput string
+	Value    string
+	IsCmd    bool
+}
+
+// evaluateValue will attempt to safely evaluate a variable that has been set to a bash expression
+// but not run any string as a command unless it is prefixed with `$`. Valid formats are $VALUE, ${VALUE}, $(cat VALUE).
+// allowed bash commands to run are defined in the sanitizeInput function
+func evaluateValue(value string) (string, error) {
+	// if the string does not start with a $ don't evaluate it
+	if !strings.HasPrefix(value, "$") {
+		return value, nil
+	}
+
+	value, err := executeBashCmd(value)
+	if err != nil {
+		return "", err
+	}
+
+	return value, nil
+}
+
+// executeBashCmd sanitizes a bash command and executes it.
+func executeBashCmd(input string) (string, error) {
+	sanitizedInput, err := sanitizeInput(input)
+	if err != nil {
+		return "", err
+	}
+
+	if !sanitizedInput.IsCmd {
+		return sanitizedInput.Value, nil
+	}
+
+	cmd := exec.Command("bash", "-c", input)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return trim(string(output)), nil
+}
+
+func sanitizeInput(input string) (*sanitizedInput, error) {
+	var sanitizedValue string
+	allowedCommands := []string{"echo", "cat", "git"}
+	disallowedCharacters := []string{";", "|", "&"}
+
+	// Use a regular expression to extract Bash expressions from the input string
+	r := regexp.MustCompile(`\$\(.+?\)|\${.+?}|\$[A-Z0-9_]+`)
+	match := r.FindString(input)
+
+	// Execute the Bash expressions and replace them with their output
+
+	// Check if the match is a $(VALUE) pattern
+	if strings.HasPrefix(match, "$(") && strings.HasSuffix(match, ")") {
+		// extract the expression to execute if it contains allowed commands
+		sanitizedValue = strings.Replace(input, match, match[2:len(match)-1], -1)
+	} else {
+		// Check if the match is a ${VALUE} pattern
+		if strings.HasPrefix(match, "${") && strings.HasSuffix(match, "}") {
+			cmd := exec.Command("bash", "-c", "echo "+match)
+			output, err := cmd.Output()
+			if err != nil {
+				return nil, err
+			}
+			sanitizedValue = strings.Replace(input, match, string(output), -1)
+			return &sanitizedInput{RawInput: input, Value: trim(sanitizedValue), IsCmd: false}, nil
+		}
+
+		// Check if the match is a $VALUE pattern
+		if strings.HasPrefix(match, "$") {
+			// Get the value of the environment variable
+			value, ok := os.LookupEnv(match[1:])
+			if !ok {
+				return nil, fmt.Errorf("undefined environment variable: %s", match[1:])
+			}
+			sanitizedValue = strings.Replace(input, match, value, -1)
+			return &sanitizedInput{RawInput: input, Value: trim(sanitizedValue), IsCmd: false}, nil
+		}
+	}
+
+	// Split the input into words
+	words := strings.Fields(sanitizedValue)
+
+	// Check if the first word is an allowed command
+	if !slices.Contains(allowedCommands, words[0]) {
+		return nil, fmt.Errorf("disallowed command: %s", words[0])
+	}
+
+	// Check if the input contains any disallowed characters
+	for _, char := range disallowedCharacters {
+		if strings.Contains(sanitizedValue, char) {
+			return nil, fmt.Errorf("disallowed character: %s", char)
+		}
+	}
+
+	return &sanitizedInput{RawInput: input, Value: trim(sanitizedValue), IsCmd: true}, nil
+}
+
+func trim(input string) string {
+	return strings.TrimSuffix(input, "\n")
 }
