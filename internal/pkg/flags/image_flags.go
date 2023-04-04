@@ -1,5 +1,7 @@
 package flags
 
+import log "github.com/sirupsen/logrus"
+
 var (
 	ImageNameFlag = Flag{
 		Name:       "",
@@ -45,7 +47,10 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 }
 
 func (f *ImageFlagGroup) ToOptions() ImageOptions {
-	sanitizedVersion := getString(f.ImageVersionFlag)
+	sanitizedVersion, err := evaluateValue(getString(f.ImageVersionFlag))
+	if err != nil {
+		log.Errorf("%v: the version will not be used as expressed", err)
+	}
 
 	opts := ImageOptions{
 		Name:                   getString(f.ImageNameFlag),
