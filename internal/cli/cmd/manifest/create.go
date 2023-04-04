@@ -6,6 +6,7 @@ import (
 	"tugboat/internal/clients/docker"
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
+	"tugboat/internal/pkg/tmpl"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -42,13 +43,18 @@ func createManifest(opts *flags.Options, args []string) error {
 		return err
 	}
 
+	compiledManifestList, err := tmpl.CompileString(args[0], opts)
+	if err != nil {
+		return err
+	}
+
 	manifestTags, err := getManifestTags(opts)
 	if err != nil {
 		return err
 	}
 
 	manifestCreateOpts := image.ManifestCreateOptions{
-		ManifestList:           args[0],
+		ManifestList:           compiledManifestList,
 		ManifestTags:           manifestTags,
 		Push:                   opts.Manifest.Create.Push,
 		SupportedArchitectures: opts.Image.SupportedArchitectures,
@@ -71,9 +77,15 @@ func createManifest(opts *flags.Options, args []string) error {
 }
 
 func getManifestTags(opts *flags.Options) ([]string, error) {
+	// Compile the tags
+	compiledTags, err := tmpl.CompileStringSlice(opts.Manifest.Create.Tags, opts)
+	if err != nil {
+		return nil, err
+	}
+
 	// build the list of manifests
 	var manifestTags []string
-	manifestTags = append(manifestTags, opts.Manifest.Create.Tags...)
+	manifestTags = append(manifestTags, compiledTags...)
 	if opts.Manifest.Create.Latest {
 		manifestTags = append(manifestTags, "latest")
 	}
