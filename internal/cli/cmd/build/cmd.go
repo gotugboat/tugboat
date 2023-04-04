@@ -6,6 +6,7 @@ import (
 	"tugboat/internal/clients/docker"
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
+	"tugboat/internal/pkg/tmpl"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -13,6 +14,7 @@ import (
 
 func NewBuildCommand(globalFlags *flags.GlobalFlagGroup) *cobra.Command {
 	buildFlags := flags.NewBuildFlagsGroup()
+	imageFlags := flags.NewImageFlagsGroup()
 
 	cmd := &cobra.Command{
 		Use:   "build",
@@ -20,7 +22,7 @@ func NewBuildCommand(globalFlags *flags.GlobalFlagGroup) *cobra.Command {
 		Long:  buildDescription,
 		Args:  cli.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := flags.ToOptions(globalFlags, buildFlags)
+			opts := flags.ToOptions(globalFlags, buildFlags, imageFlags)
 			return runBuild(opts)
 		},
 	}
@@ -42,10 +44,18 @@ func runBuild(opts *flags.Options) error {
 		return err
 	}
 
+	// Compile the tags using the template
+	compiledTags, err := tmpl.CompileStringSlice(opts.Build.Tags, opts)
+	if err != nil {
+		return err
+	}
+
+	log.Debugf("compiledTags: %v", compiledTags)
+
 	buildOpts := image.BuildOptions{
 		Dockerfile: opts.Build.File,
 		Context:    opts.Build.Context,
-		Tags:       opts.Build.Tags,
+		Tags:       compiledTags,
 		BuildArgs:  opts.Build.BuildArgs,
 		Rm:         true,
 		Pull:       opts.Build.Pull,
