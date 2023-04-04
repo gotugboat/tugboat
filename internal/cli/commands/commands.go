@@ -4,6 +4,7 @@ import (
 	"tugboat/internal/cli/cmd/build"
 	"tugboat/internal/cli/cmd/manifest"
 	"tugboat/internal/cli/cmd/root"
+	"tugboat/internal/cli/cmd/tag"
 	"tugboat/internal/cli/cmd/version"
 	"tugboat/internal/pkg/flags"
 
@@ -28,6 +29,9 @@ func addCommands(cmd *cobra.Command, globalFlags *flags.GlobalFlagGroup) {
 
 		// manifest
 		manifest.NewManifestCommand(globalFlags),
+
+		// tag
+		tag.NewTagCommand(globalFlags),
 
 		// version
 		version.NewVersionCommand(globalFlags),
