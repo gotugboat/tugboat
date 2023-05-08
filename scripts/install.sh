@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -exo pipefail
 
-# Source: https://github.com/gotugboat/website/blob/main/scripts/install.sh
+# Source: https://github.com/gotugboat/tugboat/blob/main/scripts/install.sh
 
 # Default values
 BINARY_NAME=${BINARY_NAME:-"tugboat"}
