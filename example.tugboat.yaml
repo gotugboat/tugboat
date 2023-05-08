@@ -1,0 +1,40 @@
+# Example tugboat.yaml
+options:
+  dry-run: false
+  debug: false
+  version:
+    short: false
+
+docker:
+  registry: <registry-url>
+  namespace: <namespace> # DockerHub username if using DockerHub, any if using private registry
+  user: <username>
+  pass: <password>
+
+image:
+  name: example # Optionally include the namespace instead of using docker.namespace
+  version: $VERSION # $(cat VERSION) or $TRAVIS_BUILD_ID or $GITHUB_RUN_ID or $(git log -1 --pretty=%h) or $(echo $VALUE)
+  supported-architectures:
+    - amd64
+    - arm64
+
+build:
+  args:
+    - FOO=bar
+    - BAR=foo
+  context: "."
+  file: Dockerfile
+  push: false
+  pull: false
+  no-cache: false
+  tags:
+    - '{{.ImageName}}:{{.Version}}'
+    - '{{.ImageName}}:latest'
+
+tag:
+  push: false
+
+manifest:
+  create:
+    for: latest,{{.Version}}
+    push: true
