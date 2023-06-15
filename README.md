@@ -9,7 +9,8 @@ Tugboat is an open source command-line tool for building multi-architecture cont
 > Please note that the `main` branch may be in an unstable or even broken state during development. To get a stable version of the binary, see the [releases](https://github.com/gotugboat/tugboat/releases) page to download the latest version.
 
 ## Getting Started
-<!-- TODO -->
+
+All of the documentation for Tugboat can be viewed at [gotugboat.io](https://gotugboat.io/). View the [quick start](https://gotugboat.io/docs/getting-started/quick-start/) page to learn more.
 
 ## Development
 
@@ -21,6 +22,12 @@ To develop on Tugboat follow these instructions to get your local environment al
 - Installation of [Golang](https://go.dev/dl/).
 - An IDE that supports Go, such as [Visual Studio Code](https://code.visualstudio.com/) with the [Go plugin](https://code.visualstudio.com/docs/languages/go).
 
+### Clone the project
+
+```bash
+git clone https://github.com/gotugboat/tugboat.git && cd tugboat
+```
+
 ### Install dependencies
 
 Install the Go dependencies with:
@@ -31,13 +38,13 @@ go mod download
 
 ### Run the tests
 
-```
+```bash
 make test
 ```
 
 ### Build Tugboat locally
 
-```
+```bash
 make build
 ```
 
