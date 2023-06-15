@@ -109,7 +109,7 @@ check_requirements() {
   log_info "Checking requirements"
 
   if ! check_command curl; then
-    log_err "curl"
+    log_err "curl is required to proceed with the installation"
     exit 1
   fi
 }
