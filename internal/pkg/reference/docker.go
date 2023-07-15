@@ -45,8 +45,6 @@ func NewUri(image string, opts *UriOptions) (*Reference, error) {
 		arch = opts.Arch
 	}
 
-	// decide if this is already a uri
-
 	uriString = generateUriString(image, opts.Registry, arch, opts.Official)
 
 	ref, err := parse(uriString)
