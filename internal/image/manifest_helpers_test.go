@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-	"tugboat/internal/pkg/docker"
 	"tugboat/internal/pkg/flags"
+	"tugboat/internal/pkg/reference"
 )
 
 var (
@@ -104,7 +104,7 @@ func Test_validateCommand(t *testing.T) {
 
 func Test_getCreateArgs(t *testing.T) {
 	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
-	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
+	ref, _ := reference.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &reference.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
 	})
@@ -120,7 +120,7 @@ func Test_getCreateArgs(t *testing.T) {
 
 func Test_getPushArgs(t *testing.T) {
 	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
-	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
+	ref, _ := reference.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &reference.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
 	})
@@ -137,7 +137,7 @@ func Test_getPushArgs(t *testing.T) {
 func Test_getAnnotateCommands(t *testing.T) {
 
 	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
-	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
+	ref, _ := reference.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &reference.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
 	})
@@ -155,13 +155,13 @@ func Test_getAnnotateCommands(t *testing.T) {
 
 func Test_getRmArgs(t *testing.T) {
 	imageName := fmt.Sprintf("%s:%s", image, manifestTag)
-	ref, _ := docker.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &docker.UriOptions{
+	ref, _ := reference.NewUri(fmt.Sprintf("%s/%s", basicCreateOpts.Registry.Namespace, imageName), &reference.UriOptions{
 		Registry: basicCreateOpts.Registry.ServerAddress,
 		Official: basicCreateOpts.Official,
 	})
 
 	expectedArgs := "manifest rm docker.io/namespace/image:tag"
-	rmArgs, _ := getRmArgs([]*docker.Reference{ref})
+	rmArgs, _ := getRmArgs([]*reference.Reference{ref})
 
 	actualArgs := strings.Join(rmArgs, " ")
 	if expectedArgs != actualArgs {

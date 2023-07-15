@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-	"tugboat/internal/pkg/docker"
+	"tugboat/internal/pkg/reference"
 	"tugboat/internal/pkg/slices"
 
 	log "github.com/sirupsen/logrus"
@@ -71,7 +71,7 @@ func dockerLogout(ctx context.Context, registry string, isDryRun bool) error {
 	return nil
 }
 
-func createManifest(ctx context.Context, reference *docker.Reference, opts ManifestCreateOptions) error {
+func createManifest(ctx context.Context, reference *reference.Reference, opts ManifestCreateOptions) error {
 	log.Infof("Creating Manifest for %v", reference.Remote())
 
 	arguments, err := getCreateArgs(reference, opts)
@@ -87,7 +87,7 @@ func createManifest(ctx context.Context, reference *docker.Reference, opts Manif
 	return nil
 }
 
-func annotateManifest(ctx context.Context, reference *docker.Reference, opts ManifestCreateOptions) error {
+func annotateManifest(ctx context.Context, reference *reference.Reference, opts ManifestCreateOptions) error {
 	log.Infof("Annotating Manifest for %v", reference.Remote())
 
 	annotateCommands, err := getAnnotateCommands(reference, opts)
@@ -104,7 +104,7 @@ func annotateManifest(ctx context.Context, reference *docker.Reference, opts Man
 	return nil
 }
 
-func pushManifest(ctx context.Context, reference *docker.Reference, opts PushManifestOptions) error {
+func pushManifest(ctx context.Context, reference *reference.Reference, opts PushManifestOptions) error {
 	log.Infof("Pushing Manifest for %v", reference.Remote())
 
 	arguments, err := getPushArgs(reference, opts)
@@ -120,7 +120,7 @@ func pushManifest(ctx context.Context, reference *docker.Reference, opts PushMan
 	return nil
 }
 
-func removeManifests(ctx context.Context, references []*docker.Reference, opts RmManifestOptions) error {
+func removeManifests(ctx context.Context, references []*reference.Reference, opts RmManifestOptions) error {
 	allReferences := []string{}
 	for _, ref := range references {
 		allReferences = append(allReferences, ref.Remote())
@@ -192,12 +192,12 @@ func executeCommand(cmd *Command, isDryRun bool, isDebug bool) error {
 	return nil
 }
 
-func getCreateArgs(reference *docker.Reference, opts ManifestCreateOptions) ([]string, error) {
-	args := []string{"manifest", "create", reference.Remote()}
+func getCreateArgs(ref *reference.Reference, opts ManifestCreateOptions) ([]string, error) {
+	args := []string{"manifest", "create", ref.Remote()}
 
 	for _, arch := range opts.SupportedArchitectures {
 		// Generate the arch uri for the image
-		uri, err := docker.NewUri(reference.Name(), &docker.UriOptions{
+		uri, err := reference.NewUri(ref.Name(), &reference.UriOptions{
 			Registry:   opts.Registry.ServerAddress,
 			Official:   opts.Official,
 			Arch:       arch,
@@ -214,7 +214,7 @@ func getCreateArgs(reference *docker.Reference, opts ManifestCreateOptions) ([]s
 
 }
 
-func getPushArgs(reference *docker.Reference, opts PushManifestOptions) ([]string, error) {
+func getPushArgs(reference *reference.Reference, opts PushManifestOptions) ([]string, error) {
 	args := []string{"manifest", "push"}
 
 	if opts.Purge {
@@ -227,14 +227,14 @@ func getPushArgs(reference *docker.Reference, opts PushManifestOptions) ([]strin
 
 }
 
-func getAnnotateCommands(reference *docker.Reference, opts ManifestCreateOptions) ([]*Command, error) {
+func getAnnotateCommands(ref *reference.Reference, opts ManifestCreateOptions) ([]*Command, error) {
 	var annotateCommands []*Command
-	baseArgs := []string{"manifest", "annotate", reference.Remote()}
+	baseArgs := []string{"manifest", "annotate", ref.Remote()}
 
 	for _, arch := range opts.SupportedArchitectures {
 		args := []string{}
 		// Generate the arch uri for the image
-		uri, err := docker.NewUri(reference.Name(), &docker.UriOptions{
+		uri, err := reference.NewUri(ref.Name(), &reference.UriOptions{
 			Registry:   opts.Registry.ServerAddress,
 			Official:   opts.Official,
 			Arch:       arch,
@@ -254,7 +254,7 @@ func getAnnotateCommands(reference *docker.Reference, opts ManifestCreateOptions
 	return annotateCommands, nil
 }
 
-func getRmArgs(references []*docker.Reference) ([]string, error) {
+func getRmArgs(references []*reference.Reference) ([]string, error) {
 	args := []string{"manifest", "rm"}
 
 	for _, ref := range references {

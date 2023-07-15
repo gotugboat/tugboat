@@ -3,7 +3,7 @@ package image
 import (
 	"context"
 	"fmt"
-	"tugboat/internal/pkg/docker"
+	"tugboat/internal/pkg/reference"
 
 	"github.com/docker/docker/client"
 	"github.com/pkg/errors"
@@ -39,7 +39,7 @@ func ManifestCreate(ctx context.Context, client *client.Client, opts ManifestCre
 	}
 
 	// Generate the uri for the manifest list
-	manifestListUri, err := docker.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, opts.ManifestList), &docker.UriOptions{
+	manifestListUri, err := reference.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, opts.ManifestList), &reference.UriOptions{
 		Registry: opts.Registry.ServerAddress,
 		Official: opts.Official,
 	})
@@ -52,7 +52,7 @@ func ManifestCreate(ctx context.Context, client *client.Client, opts ManifestCre
 		for _, manifestTag := range opts.ManifestTags {
 			// Generate the tagged uri to pull
 			imageName := fmt.Sprintf("%s:%s", manifestListUri.ShortName(), manifestTag)
-			manifestTagUri, err := docker.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, imageName), &docker.UriOptions{
+			manifestTagUri, err := reference.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, imageName), &reference.UriOptions{
 				Registry:   opts.Registry.ServerAddress,
 				Official:   opts.Official,
 				Arch:       arch,
@@ -81,11 +81,11 @@ func ManifestCreate(ctx context.Context, client *client.Client, opts ManifestCre
 	}
 
 	// Generate the manifests for each desired tag
-	manifestsToPush := []*docker.Reference{}
+	manifestsToPush := []*reference.Reference{}
 	for _, manifestTag := range opts.ManifestTags {
 		// Generate the tagged uri to work with
 		imageName := fmt.Sprintf("%s:%s", manifestListUri.ShortName(), manifestTag)
-		manifestTagUri, err := docker.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, imageName), &docker.UriOptions{
+		manifestTagUri, err := reference.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, imageName), &reference.UriOptions{
 			Registry: opts.Registry.ServerAddress,
 			Official: opts.Official,
 		})
