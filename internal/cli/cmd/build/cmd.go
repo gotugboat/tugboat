@@ -7,6 +7,7 @@ import (
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
 	"tugboat/internal/pkg/tmpl"
+	"tugboat/internal/registry"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -52,6 +53,17 @@ func runBuild(opts *flags.Options) error {
 
 	log.Debugf("compiledTags: %v", compiledTags)
 
+	// create the registry
+	registry, err := registry.NewRegistry(
+		opts.Global.Docker.Registry,
+		opts.Global.Docker.Namespace,
+		opts.Global.Docker.Username,
+		opts.Global.Docker.Password,
+	)
+	if err != nil {
+		return err
+	}
+
 	buildOpts := image.BuildOptions{
 		Dockerfile: opts.Build.File,
 		Context:    opts.Build.Context,
@@ -63,12 +75,7 @@ func runBuild(opts *flags.Options) error {
 		Push:       opts.Build.Push,
 		DryRun:     opts.Global.DryRun,
 		Debug:      opts.Global.Debug,
-		Registry: image.NewRegistry(
-			opts.Global.Docker.Registry,
-			opts.Global.Docker.Namespace,
-			opts.Global.Docker.Username,
-			opts.Global.Docker.Password,
-		),
+		Registry:   registry,
 		ArchOption: flags.DefaultArchOption,
 	}
 

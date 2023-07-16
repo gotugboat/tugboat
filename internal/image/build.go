@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/registry"
+	"tugboat/internal/term"
 
 	"github.com/docker/cli/cli/command/image/build"
 	"github.com/docker/docker/api/types"
@@ -26,7 +28,7 @@ type BuildOptions struct {
 	Pull       bool
 	NoCache    bool
 
-	Registry Registry
+	Registry *registry.Registry
 	Official bool
 	DryRun   bool
 	Debug    bool
@@ -74,7 +76,7 @@ func ImageBuild(ctx context.Context, client *client.Client, opts BuildOptions) e
 		}
 		defer response.Body.Close()
 
-		if err := displayResponse(response.Body); err != nil {
+		if err := term.DisplayResponse(response.Body); err != nil {
 			return err
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
 	"tugboat/internal/pkg/tmpl"
+	"tugboat/internal/registry"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -56,6 +57,17 @@ func runTag(opts *flags.Options, args []string) error {
 		return err
 	}
 
+	// create the registry
+	registry, err := registry.NewRegistry(
+		opts.Global.Docker.Registry,
+		opts.Global.Docker.Namespace,
+		opts.Global.Docker.Username,
+		opts.Global.Docker.Password,
+	)
+	if err != nil {
+		return err
+	}
+
 	log.Debugf("compiledSourceImage: %s", compiledSourceImage)
 	log.Debugf("compiledTags: %s", compiledTags)
 
@@ -64,16 +76,11 @@ func runTag(opts *flags.Options, args []string) error {
 		Tags:                   compiledTags,
 		Push:                   opts.Tag.Push,
 		SupportedArchitectures: opts.Image.SupportedArchitectures,
-		Registry: image.NewRegistry(
-			opts.Global.Docker.Registry,
-			opts.Global.Docker.Namespace,
-			opts.Global.Docker.Username,
-			opts.Global.Docker.Password,
-		),
-		Official:   opts.Global.Official,
-		DryRun:     opts.Global.DryRun,
-		Debug:      opts.Global.Debug,
-		ArchOption: flags.DefaultArchOption,
+		Registry:               registry,
+		Official:               opts.Global.Official,
+		DryRun:                 opts.Global.DryRun,
+		Debug:                  opts.Global.Debug,
+		ArchOption:             flags.DefaultArchOption,
 	}
 
 	if err := image.ImageTag(ctx, client, tagOptions); err != nil {

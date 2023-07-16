@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/registry"
 
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
@@ -16,7 +17,7 @@ type TagOptions struct {
 	Push                   bool
 	SupportedArchitectures []string
 
-	Registry Registry
+	Registry *registry.Registry
 	Official bool
 	DryRun   bool
 	Debug    bool

@@ -3,17 +3,14 @@ package image
 import (
 	"encoding/base64"
 	"encoding/json"
-	"io"
-	"os"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/registry"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/moby/term"
 )
 
 // Returns encoded registry credentials
-func encodeRegistryCredentials(registry Registry) (string, error) {
+func encodeRegistryCredentials(registry *registry.Registry) (string, error) {
 	authConfig := types.AuthConfig{
 		Username:      registry.User.Name,
 		Password:      registry.User.Password,
@@ -25,15 +22,6 @@ func encodeRegistryCredentials(registry Registry) (string, error) {
 	}
 	encodedAuthConfig := base64.URLEncoding.EncodeToString(authConfigAsBytes)
 	return encodedAuthConfig, nil
-}
-
-// Display client responses to the terminal
-func displayResponse(r io.Reader) error {
-	termFd, isTerm := term.GetFdInfo(os.Stderr)
-	if err := jsonmessage.DisplayJSONMessagesStream(r, os.Stderr, termFd, isTerm, nil); err != nil {
-		return err
-	}
-	return nil
 }
 
 // Return a given string as a reference.ArchOption

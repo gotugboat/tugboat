@@ -198,7 +198,7 @@ func getCreateArgs(ref *reference.Reference, opts ManifestCreateOptions) ([]stri
 	for _, arch := range opts.SupportedArchitectures {
 		// Generate the arch uri for the image
 		uri, err := reference.NewUri(ref.Name(), &reference.UriOptions{
-			Registry:   opts.Registry.ServerAddress,
+			Registry:   ref.Registry(),
 			Official:   opts.Official,
 			Arch:       arch,
 			ArchOption: toArchOption(opts.ArchOption),
@@ -235,7 +235,7 @@ func getAnnotateCommands(ref *reference.Reference, opts ManifestCreateOptions) (
 		args := []string{}
 		// Generate the arch uri for the image
 		uri, err := reference.NewUri(ref.Name(), &reference.UriOptions{
-			Registry:   opts.Registry.ServerAddress,
+			Registry:   ref.Registry(),
 			Official:   opts.Official,
 			Arch:       arch,
 			ArchOption: toArchOption(opts.ArchOption),
