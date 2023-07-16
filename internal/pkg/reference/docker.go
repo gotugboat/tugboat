@@ -1,11 +1,11 @@
-package docker
+package reference
 
 import (
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 	"fmt"
 	"strings"
-	"tugboat/internal/pkg/docker/docker"
+	"tugboat/internal/pkg/reference/docker"
 )
 
 // Reference is an opaque object that include identifier such as a name, tag, repository, registry, etc...
@@ -58,6 +58,11 @@ func NewUri(image string, opts *UriOptions) (*Reference, error) {
 	}
 
 	if !opts.Official {
+		// Prevent attaching an arch if the tag already contains the arch
+		if strings.Contains(ref.Tag(), arch) {
+			return ref, nil
+		}
+
 		switch opts.ArchOption {
 		case ArchPrepend:
 			ref.tag = fmt.Sprintf(":%s-%s", arch, ref.Tag())

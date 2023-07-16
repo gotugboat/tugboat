@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"tugboat/internal/pkg/docker/distribution/reference"
+	"tugboat/internal/pkg/reference/distribution/reference"
 
 	"github.com/opencontainers/go-digest"
 )

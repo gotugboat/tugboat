@@ -1,4 +1,4 @@
-package docker
+package reference
 
 import "testing"
 
@@ -396,6 +396,51 @@ func TestNewUriWithDefinedArch_unofficial(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			runTestCaseWithArchUnofficial(t, tc)
+		})
+	}
+}
+
+func TestNewUriWithFullUri(t *testing.T) {
+	testCases := []testCase{
+		{
+			name:       "Image with full uri string",
+			registry:   "localhost.local",
+			image:      "localhost.local/namespace/busybox:latest",
+			archOption: ArchPrepend,
+			expected:   "localhost.local/namespace/busybox:arch-latest",
+		},
+		{
+			name:       "Image with full uri string",
+			registry:   "localhost2.local",
+			image:      "localhost.local/namespace/busybox:latest",
+			archOption: ArchPrepend,
+			expected:   "localhost.local/namespace/busybox:arch-latest",
+		},
+		{
+			name:       "Image with full uri string",
+			registry:   "localhost.local",
+			image:      "localhost2.local/namespace/busybox:latest",
+			archOption: ArchPrepend,
+			expected:   "localhost2.local/namespace/busybox:arch-latest",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			opts := &UriOptions{
+				Registry:   tc.registry,
+				Official:   false,
+				ArchOption: tc.archOption,
+			}
+			uri, err := NewUri(tc.image, opts)
+			if err != nil {
+				t.Errorf("An unexpected error occurred: %v", err)
+			}
+
+			actual := patchArch(uri.Remote())
+
+			if tc.expected != actual {
+				t.Errorf("expected value: %v; actual value: %v", tc.expected, actual)
+			}
 		})
 	}
 }

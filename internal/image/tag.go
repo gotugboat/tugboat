@@ -3,7 +3,7 @@ package image
 import (
 	"context"
 	"fmt"
-	"tugboat/internal/pkg/docker"
+	"tugboat/internal/pkg/reference"
 
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +35,7 @@ func ImageTag(ctx context.Context, client *client.Client, opts TagOptions) error
 
 	for _, arch := range opts.SupportedArchitectures {
 		// Generate the uri for the source image
-		sourceUri, err := docker.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, opts.SourceImage), &docker.UriOptions{
+		sourceUri, err := reference.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, opts.SourceImage), &reference.UriOptions{
 			Registry:   opts.Registry.ServerAddress,
 			Official:   opts.Official,
 			Arch:       arch,
@@ -52,7 +52,7 @@ func ImageTag(ctx context.Context, client *client.Client, opts TagOptions) error
 
 		for _, targetTag := range opts.Tags {
 			// Generate the uri for the target tag
-			targetUri, err := docker.NewUri(fmt.Sprintf("%v:%v", sourceUri.ShortName(), targetTag), &docker.UriOptions{
+			targetUri, err := reference.NewUri(fmt.Sprintf("%v:%v", sourceUri.ShortName(), targetTag), &reference.UriOptions{
 				Registry:   opts.Registry.ServerAddress,
 				Official:   opts.Official,
 				Arch:       arch,

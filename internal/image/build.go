@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"tugboat/internal/pkg/docker"
+	"tugboat/internal/pkg/reference"
 
 	"github.com/docker/cli/cli/command/image/build"
 	"github.com/docker/docker/api/types"
@@ -91,11 +91,11 @@ func ImageBuild(ctx context.Context, client *client.Client, opts BuildOptions) e
 	return nil
 }
 
-func generateAllUris(opts BuildOptions) ([]*docker.Reference, error) {
-	buildTags := []*docker.Reference{}
+func generateAllUris(opts BuildOptions) ([]*reference.Reference, error) {
+	buildTags := []*reference.Reference{}
 
 	for _, tag := range opts.Tags {
-		taggedUri, err := docker.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, tag), &docker.UriOptions{
+		taggedUri, err := reference.NewUri(fmt.Sprintf("%s/%s", opts.Registry.Namespace, tag), &reference.UriOptions{
 			Registry:   opts.Registry.ServerAddress,
 			Official:   opts.Official,
 			ArchOption: toArchOption(opts.ArchOption),
@@ -109,7 +109,7 @@ func generateAllUris(opts BuildOptions) ([]*docker.Reference, error) {
 	return buildTags, nil
 }
 
-func imageBuildOptions(buildUris []*docker.Reference, opts BuildOptions) types.ImageBuildOptions {
+func imageBuildOptions(buildUris []*reference.Reference, opts BuildOptions) types.ImageBuildOptions {
 	// Prepare the tags
 	var buildTags []string
 	for _, uri := range buildUris {

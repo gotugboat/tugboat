@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
-	"tugboat/internal/pkg/docker"
+	"tugboat/internal/pkg/reference"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/jsonmessage"
@@ -36,14 +36,14 @@ func displayResponse(r io.Reader) error {
 	return nil
 }
 
-// Return a given string as a docker.ArchOption
-func toArchOption(value string) docker.ArchOption {
+// Return a given string as a reference.ArchOption
+func toArchOption(value string) reference.ArchOption {
 	switch value {
 	case "prepend":
-		return docker.ArchPrepend
+		return reference.ArchPrepend
 	case "append":
-		return docker.ArchAppend
+		return reference.ArchAppend
 	default:
-		return docker.ArchOmit
+		return reference.ArchOmit
 	}
 }
