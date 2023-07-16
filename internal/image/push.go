@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"tugboat/internal/term"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -30,7 +31,7 @@ func push(ctx context.Context, client *client.Client, registry Registry, image s
 	}
 	defer response.Close()
 
-	if err := displayResponse(response); err != nil {
+	if err := term.DisplayResponse(response); err != nil {
 		return err
 	}
 

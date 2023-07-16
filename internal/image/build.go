@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/term"
 
 	"github.com/docker/cli/cli/command/image/build"
 	"github.com/docker/docker/api/types"
@@ -74,7 +75,7 @@ func ImageBuild(ctx context.Context, client *client.Client, opts BuildOptions) e
 		}
 		defer response.Body.Close()
 
-		if err := displayResponse(response.Body); err != nil {
+		if err := term.DisplayResponse(response.Body); err != nil {
 			return err
 		}
 	}
