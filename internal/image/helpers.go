@@ -4,12 +4,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/registry"
 
 	"github.com/docker/docker/api/types"
 )
 
 // Returns encoded registry credentials
-func encodeRegistryCredentials(registry Registry) (string, error) {
+func encodeRegistryCredentials(registry *registry.Registry) (string, error) {
 	authConfig := types.AuthConfig{
 		Username:      registry.User.Name,
 		Password:      registry.User.Password,

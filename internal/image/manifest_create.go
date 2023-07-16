@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/registry"
 
 	"github.com/docker/docker/client"
 	"github.com/pkg/errors"
@@ -21,7 +22,7 @@ type ManifestCreateOptions struct {
 	Push                   bool
 	SupportedArchitectures []string
 
-	Registry Registry
+	Registry *registry.Registry
 	Official bool
 	DryRun   bool
 	Debug    bool

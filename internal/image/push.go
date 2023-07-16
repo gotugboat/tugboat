@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"tugboat/internal/registry"
 	"tugboat/internal/term"
 
 	"github.com/docker/docker/api/types"
@@ -9,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func push(ctx context.Context, client *client.Client, registry Registry, image string, isDryRun bool) error {
+func push(ctx context.Context, client *client.Client, registry *registry.Registry, image string, isDryRun bool) error {
 	log.Infof("Pushing %s", image)
 
 	if isDryRun {

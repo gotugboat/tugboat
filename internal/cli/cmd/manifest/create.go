@@ -7,6 +7,7 @@ import (
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
 	"tugboat/internal/pkg/tmpl"
+	"tugboat/internal/registry"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -53,21 +54,27 @@ func createManifest(opts *flags.Options, args []string) error {
 		return err
 	}
 
+	// create the registry
+	registry, err := registry.NewRegistry(
+		opts.Global.Docker.Registry,
+		opts.Global.Docker.Namespace,
+		opts.Global.Docker.Username,
+		opts.Global.Docker.Password,
+	)
+	if err != nil {
+		return err
+	}
+
 	manifestCreateOpts := image.ManifestCreateOptions{
 		ManifestList:           compiledManifestList,
 		ManifestTags:           manifestTags,
 		Push:                   opts.Manifest.Create.Push,
 		SupportedArchitectures: opts.Image.SupportedArchitectures,
-		Registry: image.NewRegistry(
-			opts.Global.Docker.Registry,
-			opts.Global.Docker.Namespace,
-			opts.Global.Docker.Username,
-			opts.Global.Docker.Password,
-		),
-		Official:   opts.Global.Official,
-		DryRun:     opts.Global.DryRun,
-		Debug:      opts.Global.Debug,
-		ArchOption: flags.DefaultArchOption,
+		Registry:               registry,
+		Official:               opts.Global.Official,
+		DryRun:                 opts.Global.DryRun,
+		Debug:                  opts.Global.Debug,
+		ArchOption:             flags.DefaultArchOption,
 	}
 
 	if err := image.ManifestCreate(ctx, client, manifestCreateOpts); err != nil {

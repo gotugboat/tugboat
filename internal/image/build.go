@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/registry"
 	"tugboat/internal/term"
 
 	"github.com/docker/cli/cli/command/image/build"
@@ -27,7 +28,7 @@ type BuildOptions struct {
 	Pull       bool
 	NoCache    bool
 
-	Registry Registry
+	Registry *registry.Registry
 	Official bool
 	DryRun   bool
 	Debug    bool
