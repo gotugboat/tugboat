@@ -5,11 +5,14 @@ options:
   version:
     short: false
 
-docker:
-  registry: <registry-url>
+driver:
+  name: docker
+
+registry:
+  url: <registry-url>
   namespace: <namespace> # DockerHub username if using DockerHub, any if using private registry
   user: <username>
-  pass: <password>
+  password: <password>
 
 image:
   name: example # Optionally include the namespace instead of using docker.namespace

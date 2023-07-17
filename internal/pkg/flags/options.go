@@ -14,6 +14,8 @@ type Options struct {
 type GlobalOptions struct {
 	ConfigFile string
 	Docker     DockerOptions
+	Driver     DriverOptions
+	Registry   RegistryOptions
 	Debug      bool
 	DryRun     bool
 	Official   bool
@@ -38,6 +40,10 @@ type DockerOptions struct {
 	Password  string
 }
 
+type DriverOptions struct {
+	Name string
+}
+
 type ImageOptions struct {
 	Name                   string
 	SupportedArchitectures []string
@@ -57,6 +63,13 @@ type ManifestCreateOptions struct {
 
 type ManifestPushOptions struct {
 	Purge bool
+}
+
+type RegistryOptions struct {
+	Url       string
+	Namespace string
+	Username  string
+	Password  string
 }
 
 type TagOptions struct {

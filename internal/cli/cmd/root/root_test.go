@@ -36,7 +36,7 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate the number of flags
-	expectedFlagCount := 8
+	expectedFlagCount := 13
 	actualFlagCount := 0
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
 		actualFlagCount++
