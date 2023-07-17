@@ -37,6 +37,42 @@ var (
 		Usage:      "Mimic the official docker publish method for images in private registries",
 		Persistent: true,
 	}
+	// registry flags
+	RegistryUrlFlag = Flag{
+		Name:       "registry",
+		ConfigName: "registry.url",
+		Value:      "docker.io",
+		Usage:      "The registry to use",
+		Persistent: true,
+	}
+	RegistryNamespaceFlag = Flag{
+		Name:       "registry-namespace",
+		ConfigName: "registry.namespace",
+		Value:      "",
+		Usage:      "The namespace in the registry to use (DockerHub username if using DockerHub, any if using private registry)",
+		Persistent: true,
+	}
+	RegistryUsernameFlag = Flag{
+		Name:       "registry-user",
+		ConfigName: "registry.user",
+		Value:      "",
+		Usage:      "The username credential with access to the registry",
+		Persistent: true,
+	}
+	RegistryPasswordFlag = Flag{
+		Name:       "registry-password",
+		ConfigName: "registry.password",
+		Value:      "",
+		Usage:      "The password credential with access to the registry",
+		Persistent: true,
+	}
+	DriverNameFlag = Flag{
+		Name:       "driver",
+		ConfigName: "driver.name",
+		Value:      "auto",
+		Usage:      "The driver to use to manage containers",
+		Persistent: true,
+	}
 	// docker flags
 	DockerRegistryFlag = Flag{
 		Name:       "docker-registry",
@@ -44,6 +80,7 @@ var (
 		Value:      "docker.io",
 		Usage:      "The docker registry to use",
 		Persistent: true,
+		Deprecated: true,
 	}
 	DockerNamespaceFlag = Flag{
 		Name:       "docker-namespace",
@@ -51,6 +88,7 @@ var (
 		Value:      "",
 		Usage:      "The namespace in the docker registry to use (DockerHub username if using DockerHub, any if using private registry)",
 		Persistent: true,
+		Deprecated: true,
 	}
 	DockerUsernameFlag = Flag{
 		Name:       "docker-user",
@@ -58,6 +96,7 @@ var (
 		Value:      "",
 		Usage:      "The username credential with access to the registry",
 		Persistent: true,
+		Deprecated: true,
 	}
 	DockerPasswordFlag = Flag{
 		Name:       "docker-pass",
@@ -65,23 +104,36 @@ var (
 		Value:      "",
 		Usage:      "The password credential with access to the registry",
 		Persistent: true,
+		Deprecated: true,
 	}
 )
 
 type DockerFlagGroup struct {
-	IsExperimentalFlag *Flag
-	RegistryFlag       *Flag
-	NamespaceFlag      *Flag
-	UsernameFlag       *Flag
-	PasswordFlag       *Flag
+	RegistryFlag  *Flag
+	NamespaceFlag *Flag
+	UsernameFlag  *Flag
+	PasswordFlag  *Flag
+}
+
+type DriverFlagGroup struct {
+	NameFlag *Flag
+}
+
+type RegistryFlagGroup struct {
+	RegistryUrlFlag *Flag
+	NamespaceFlag   *Flag
+	UsernameFlag    *Flag
+	PasswordFlag    *Flag
 }
 
 type GlobalFlagGroup struct {
-	ConfigFileFlag  *Flag
-	DebugFlag       *Flag
-	DryRunFlag      *Flag
-	DockerFlagGroup *DockerFlagGroup
-	OfficialFlag    *Flag
+	ConfigFileFlag    *Flag
+	DebugFlag         *Flag
+	DryRunFlag        *Flag
+	DockerFlagGroup   *DockerFlagGroup
+	DriverFlagGroup   *DriverFlagGroup
+	RegistryFlagGroup *RegistryFlagGroup
+	OfficialFlag      *Flag
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -95,6 +147,15 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 			UsernameFlag:  &DockerUsernameFlag,
 			PasswordFlag:  &DockerPasswordFlag,
 		},
+		DriverFlagGroup: &DriverFlagGroup{
+			NameFlag: &DriverNameFlag,
+		},
+		RegistryFlagGroup: &RegistryFlagGroup{
+			RegistryUrlFlag: &RegistryUrlFlag,
+			NamespaceFlag:   &RegistryNamespaceFlag,
+			UsernameFlag:    &RegistryUsernameFlag,
+			PasswordFlag:    &RegistryPasswordFlag,
+		},
 		OfficialFlag: &OfficialFlag,
 	}
 }
@@ -104,7 +165,7 @@ func (f *GlobalFlagGroup) Name() string {
 }
 
 func (f *GlobalFlagGroup) Flags() []*Flag {
-	return []*Flag{f.ConfigFileFlag, f.DebugFlag, f.DryRunFlag, f.OfficialFlag, f.DockerFlagGroup.RegistryFlag, f.DockerFlagGroup.NamespaceFlag, f.DockerFlagGroup.UsernameFlag, f.DockerFlagGroup.PasswordFlag}
+	return []*Flag{f.ConfigFileFlag, f.DebugFlag, f.DryRunFlag, f.OfficialFlag, f.DriverFlagGroup.NameFlag, f.DockerFlagGroup.RegistryFlag, f.DockerFlagGroup.NamespaceFlag, f.DockerFlagGroup.UsernameFlag, f.DockerFlagGroup.PasswordFlag, f.RegistryFlagGroup.RegistryUrlFlag, f.RegistryFlagGroup.NamespaceFlag, f.RegistryFlagGroup.UsernameFlag, f.RegistryFlagGroup.PasswordFlag}
 }
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
@@ -123,6 +184,15 @@ func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 			Namespace: getString(f.DockerFlagGroup.NamespaceFlag),
 			Username:  getString(f.DockerFlagGroup.UsernameFlag),
 			Password:  getString(f.DockerFlagGroup.PasswordFlag),
+		},
+		Driver: DriverOptions{
+			Name: getString(f.DriverFlagGroup.NameFlag),
+		},
+		Registry: RegistryOptions{
+			Url:       getString(f.RegistryFlagGroup.RegistryUrlFlag),
+			Namespace: getString(f.RegistryFlagGroup.NamespaceFlag),
+			Username:  getString(f.RegistryFlagGroup.UsernameFlag),
+			Password:  getString(f.RegistryFlagGroup.PasswordFlag),
 		},
 		Official: getBool(f.OfficialFlag),
 		Git: Git{
