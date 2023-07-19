@@ -3,7 +3,8 @@ package tag
 import (
 	"context"
 	"tugboat/internal/cli"
-	"tugboat/internal/clients/docker"
+	"tugboat/internal/driver"
+	"tugboat/internal/drivers"
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
 	"tugboat/internal/pkg/tmpl"
@@ -42,10 +43,6 @@ func runTag(opts *flags.Options, args []string) error {
 	log.Debugf("Tag Args: %+v", args)
 
 	ctx := context.Background()
-	client, err := docker.NewClientFromEnv()
-	if err != nil {
-		return err
-	}
 
 	compiledSourceImage, err := tmpl.CompileString(args[0], opts)
 	if err != nil {
@@ -57,33 +54,38 @@ func runTag(opts *flags.Options, args []string) error {
 		return err
 	}
 
-	// create the registry
+	log.Debugf("compiledSourceImage: %s", compiledSourceImage)
+	log.Debugf("compiledTags: %s", compiledTags)
+
 	registry, err := registry.NewRegistry(
-		opts.Global.Docker.Registry,
-		opts.Global.Docker.Namespace,
-		opts.Global.Docker.Username,
-		opts.Global.Docker.Password,
+		opts.Global.Registry.Url,
+		opts.Global.Registry.Namespace,
+		opts.Global.Registry.Username,
+		opts.Global.Registry.Password,
 	)
 	if err != nil {
 		return err
 	}
 
-	log.Debugf("compiledSourceImage: %s", compiledSourceImage)
-	log.Debugf("compiledTags: %s", compiledTags)
+	driverOpts := driver.DriverOptions{
+		Registry:        registry,
+		DryRun:          opts.Global.DryRun,
+		Debug:           opts.Global.Debug,
+		ArchitectureTag: flags.DefaultArchOption,
+	}
+	d, err := drivers.NewDriver(opts.Global.Driver.Name, driverOpts)
+	if err != nil {
+		return err
+	}
 
 	tagOptions := image.TagOptions{
 		SourceImage:            compiledSourceImage,
 		Tags:                   compiledTags,
 		Push:                   opts.Tag.Push,
 		SupportedArchitectures: opts.Image.SupportedArchitectures,
-		Registry:               registry,
-		Official:               opts.Global.Official,
-		DryRun:                 opts.Global.DryRun,
-		Debug:                  opts.Global.Debug,
-		ArchOption:             flags.DefaultArchOption,
 	}
 
-	if err := image.ImageTag(ctx, client, tagOptions); err != nil {
+	if err := image.Tag(ctx, d, tagOptions); err != nil {
 		return err
 	}
 	return nil
