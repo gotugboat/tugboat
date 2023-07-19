@@ -2,38 +2,22 @@ package image
 
 import (
 	"context"
-	"tugboat/internal/registry"
+	"tugboat/internal/driver"
 	"tugboat/internal/term"
-
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
-	log "github.com/sirupsen/logrus"
 )
 
-func push(ctx context.Context, client *client.Client, registry *registry.Registry, image string, isDryRun bool) error {
-	log.Infof("Pushing %s", image)
-
-	if isDryRun {
-		return nil
-	}
-
-	encodedRegistryAuth, err := encodeRegistryCredentials(registry)
+func Push(ctx context.Context, d driver.ImagePusher, image string) error {
+	output, err := d.PushImage(ctx, image)
 	if err != nil {
 		return err
 	}
 
-	pushOpts := types.ImagePushOptions{
-		RegistryAuth: encodedRegistryAuth,
-	}
+	if output != nil {
+		defer output.Close()
 
-	response, err := client.ImagePush(ctx, image, pushOpts)
-	if err != nil {
-		return err
-	}
-	defer response.Close()
-
-	if err := term.DisplayResponse(response); err != nil {
-		return err
+		if err := term.DisplayResponse(output); err != nil {
+			return err
+		}
 	}
 
 	return nil
