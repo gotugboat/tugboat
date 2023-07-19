@@ -3,7 +3,8 @@ package build
 import (
 	"context"
 	"tugboat/internal/cli"
-	"tugboat/internal/clients/docker"
+	"tugboat/internal/driver"
+	"tugboat/internal/drivers"
 	"tugboat/internal/image"
 	"tugboat/internal/pkg/flags"
 	"tugboat/internal/pkg/tmpl"
@@ -40,10 +41,6 @@ func runBuild(opts *flags.Options) error {
 	log.Debugf("Build Options: %+v", opts)
 
 	ctx := context.Background()
-	client, err := docker.NewClientFromEnv()
-	if err != nil {
-		return err
-	}
 
 	// Compile the tags using the template
 	compiledTags, err := tmpl.CompileStringSlice(opts.Build.Tags, opts)
@@ -53,13 +50,23 @@ func runBuild(opts *flags.Options) error {
 
 	log.Debugf("compiledTags: %v", compiledTags)
 
-	// create the registry
 	registry, err := registry.NewRegistry(
-		opts.Global.Docker.Registry,
-		opts.Global.Docker.Namespace,
-		opts.Global.Docker.Username,
-		opts.Global.Docker.Password,
+		opts.Global.Registry.Url,
+		opts.Global.Registry.Namespace,
+		opts.Global.Registry.Username,
+		opts.Global.Registry.Password,
 	)
+	if err != nil {
+		return err
+	}
+
+	driverOpts := driver.DriverOptions{
+		Registry:        registry,
+		DryRun:          opts.Global.DryRun,
+		Debug:           opts.Global.Debug,
+		ArchitectureTag: flags.DefaultArchOption,
+	}
+	d, err := drivers.NewDriver(opts.Global.Driver.Name, driverOpts)
 	if err != nil {
 		return err
 	}
@@ -69,18 +76,13 @@ func runBuild(opts *flags.Options) error {
 		Context:    opts.Build.Context,
 		Tags:       compiledTags,
 		BuildArgs:  opts.Build.BuildArgs,
-		Rm:         true,
 		Pull:       opts.Build.Pull,
 		NoCache:    opts.Build.NoCache,
 		Push:       opts.Build.Push,
-		DryRun:     opts.Global.DryRun,
-		Debug:      opts.Global.Debug,
-		Registry:   registry,
-		ArchOption: flags.DefaultArchOption,
 	}
-
-	if err := image.ImageBuild(ctx, client, buildOpts); err != nil {
+	if err := image.Build(ctx, d, buildOpts); err != nil {
 		return err
 	}
+
 	return nil
 }
