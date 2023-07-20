@@ -36,7 +36,7 @@ func TestRootCommand(t *testing.T) {
 	}
 
 	// validate the number of flags
-	expectedFlagCount := 13
+	expectedFlagCount := 9
 	actualFlagCount := 0
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
 		actualFlagCount++
@@ -59,19 +59,19 @@ func TestRootCommand(t *testing.T) {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-registry"); err != nil {
+	if _, err := cmd.Flags().GetString("registry"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-namespace"); err != nil {
+	if _, err := cmd.Flags().GetString("registry-namespace"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-user"); err != nil {
+	if _, err := cmd.Flags().GetString("registry-user"); err != nil {
 		t.Error(err)
 	}
 
-	if _, err := cmd.Flags().GetString("docker-pass"); err != nil {
+	if _, err := cmd.Flags().GetString("registry-password"); err != nil {
 		t.Error(err)
 	}
 
