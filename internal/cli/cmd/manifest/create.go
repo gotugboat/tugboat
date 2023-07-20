@@ -3,8 +3,9 @@ package manifest
 import (
 	"context"
 	"tugboat/internal/cli"
-	"tugboat/internal/clients/docker"
-	"tugboat/internal/image"
+	"tugboat/internal/driver"
+	"tugboat/internal/drivers"
+	"tugboat/internal/manifest"
 	"tugboat/internal/pkg/flags"
 	"tugboat/internal/pkg/tmpl"
 	"tugboat/internal/registry"
@@ -39,10 +40,6 @@ func createManifest(opts *flags.Options, args []string) error {
 	log.Debugf("Manifest Create Args: %+v", args)
 
 	ctx := context.Background()
-	client, err := docker.NewClientFromEnv()
-	if err != nil {
-		return err
-	}
 
 	compiledManifestList, err := tmpl.CompileString(args[0], opts)
 	if err != nil {
@@ -54,30 +51,35 @@ func createManifest(opts *flags.Options, args []string) error {
 		return err
 	}
 
-	// create the registry
 	registry, err := registry.NewRegistry(
-		opts.Global.Docker.Registry,
-		opts.Global.Docker.Namespace,
-		opts.Global.Docker.Username,
-		opts.Global.Docker.Password,
+		opts.Global.Registry.Url,
+		opts.Global.Registry.Namespace,
+		opts.Global.Registry.Username,
+		opts.Global.Registry.Password,
 	)
 	if err != nil {
 		return err
 	}
 
-	manifestCreateOpts := image.ManifestCreateOptions{
+	driverOpts := driver.DriverOptions{
+		Registry:        registry,
+		DryRun:          opts.Global.DryRun,
+		Debug:           opts.Global.Debug,
+		ArchitectureTag: flags.DefaultArchOption,
+	}
+	d, err := drivers.NewDriver(opts.Global.Driver.Name, driverOpts)
+	if err != nil {
+		return err
+	}
+
+	manifestCreateOpts := manifest.ManifestCreateOptions{
 		ManifestList:           compiledManifestList,
 		ManifestTags:           manifestTags,
 		Push:                   opts.Manifest.Create.Push,
 		SupportedArchitectures: opts.Image.SupportedArchitectures,
-		Registry:               registry,
-		Official:               opts.Global.Official,
-		DryRun:                 opts.Global.DryRun,
-		Debug:                  opts.Global.Debug,
-		ArchOption:             flags.DefaultArchOption,
 	}
 
-	if err := image.ManifestCreate(ctx, client, manifestCreateOpts); err != nil {
+	if err := manifest.Create(ctx, d, manifestCreateOpts); err != nil {
 		return err
 	}
 	return nil
