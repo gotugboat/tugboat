@@ -13,7 +13,6 @@ type Options struct {
 
 type GlobalOptions struct {
 	ConfigFile string
-	Docker     DockerOptions
 	Driver     DriverOptions
 	Registry   RegistryOptions
 	Debug      bool
@@ -31,13 +30,6 @@ type BuildOptions struct {
 	Push      bool
 	Pull      bool
 	NoCache   bool
-}
-
-type DockerOptions struct {
-	Registry  string
-	Namespace string
-	Username  string
-	Password  string
 }
 
 type DriverOptions struct {
