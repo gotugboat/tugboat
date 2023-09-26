@@ -23,7 +23,9 @@ func generateUriString(image string, registry string, arch string, isOfficial bo
 			namespace = s[0]
 			image = s[1]
 		} else if len(s) == 3 {
-			registry = s[0]
+			if strings.Contains(s[0], ".") {
+				registry = s[0]
+			}
 			namespace = s[1]
 			image = s[2]
 		}

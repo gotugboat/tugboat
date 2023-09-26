@@ -1,6 +1,49 @@
 package reference
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
+
+func TestNewUri_unofficial_namespace(t *testing.T) {
+	testCases := []struct {
+		name       string
+		registry   string
+		namespace  string
+		image      string
+		archOption ArchOption
+		expected   string
+	}{
+		// registry, namespace
+		{
+			name:       "registry, duplicate namespace",
+			registry:   "localhost.local",
+			namespace:  "namespace",
+			image:      "namespace/busybox",
+			archOption: ArchOmit,
+			expected:   "localhost.local/namespace/busybox:latest",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			opts := &UriOptions{
+				Registry:   tc.registry,
+				Official:   false,
+				ArchOption: tc.archOption,
+			}
+			uri, err := NewUri(fmt.Sprintf("%s/%s", tc.namespace, tc.image), opts)
+			if err != nil {
+				t.Errorf("An unexpected error occurred: %v", err)
+			}
+
+			actual := patchArch(uri.Remote())
+
+			if tc.expected != actual {
+				t.Errorf("expected value: %v; actual value: %v", tc.expected, actual)
+			}
+		})
+	}
+}
 
 func TestNewUri_official(t *testing.T) {
 	testCases := []struct {
