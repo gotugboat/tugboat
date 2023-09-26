@@ -65,6 +65,18 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		}
 	}
 
+	if strings.Contains(flag.ConfigName, "-") {
+		var str string
+		replace_chars := []string{"-", "."}
+
+		for _, char := range replace_chars {
+			str = strings.ReplaceAll(flag.ConfigName, char, "_")
+		}
+		str = strings.ToUpper(str)
+
+		viper.BindEnv(flag.ConfigName, str)
+	}
+
 	// Bind the yaml configs to an env var (i.e log.format -> LOG_FORMAT)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
