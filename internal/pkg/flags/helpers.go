@@ -66,11 +66,11 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	}
 
 	if strings.Contains(flag.ConfigName, "-") {
-		var str string
+		str := flag.ConfigName
 		replace_chars := []string{"-", "."}
 
 		for _, char := range replace_chars {
-			str = strings.ReplaceAll(flag.ConfigName, char, "_")
+			str = strings.ReplaceAll(str, char, "_")
 		}
 		str = strings.ToUpper(str)
 
