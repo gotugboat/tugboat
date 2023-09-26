@@ -105,12 +105,7 @@ func (d *DockerDriver) PullImage(ctx context.Context, image string) (io.ReadClos
 }
 
 func (d *DockerDriver) PullImageWithArch(ctx context.Context, image string, architecture string) (io.ReadCloser, error) {
-	uri, err := reference.NewUri(image, &reference.UriOptions{
-		Registry:   d.registry.ServerAddress,
-		Official:   d.Official,
-		Arch:       architecture,
-		ArchOption: reference.ArchOption(d.ArchitectureTag),
-	})
+	uri, err := d.GetUriWithArch(image, architecture)
 	if err != nil {
 		return nil, err
 	}
@@ -177,12 +172,7 @@ func (d *DockerDriver) PushImage(ctx context.Context, image string) (io.ReadClos
 }
 
 func (d *DockerDriver) PushImageWithArch(ctx context.Context, image string, architecture string) (io.ReadCloser, error) {
-	uri, err := reference.NewUri(image, &reference.UriOptions{
-		Registry:   d.registry.ServerAddress,
-		Official:   d.Official,
-		Arch:       architecture,
-		ArchOption: reference.ArchOption(d.ArchitectureTag),
-	})
+	uri, err := d.GetUriWithArch(image, architecture)
 	if err != nil {
 		return nil, err
 	}
