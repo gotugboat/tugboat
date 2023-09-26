@@ -15,7 +15,7 @@ type RegistryUser struct {
 
 func NewRegistry(serverAddress, namespace, username, password string) (*Registry, error) {
 	if serverAddress == "" || username == "" || password == "" {
-		return nil, errors.New("invalid input parameters")
+		return nil, errors.New("invalid registry parameters: registry url, username, and password must be provided")
 	}
 
 	return &Registry{
