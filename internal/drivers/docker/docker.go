@@ -345,6 +345,15 @@ func (d *DockerDriver) GetUri(tag string) (*reference.Reference, error) {
 	return uri, nil
 }
 
+func (d *DockerDriver) GetUriWithArch(tag string, arch string) (*reference.Reference, error) {
+	uri, err := driver.GenerateUriWithArch(d.registry.ServerAddress, d.registry.Namespace, tag, d.Official, reference.ArchOption(d.ArchitectureTag), arch)
+	if err != nil {
+		return nil, err
+	}
+
+	return uri, nil
+}
+
 func (d *DockerDriver) login(ctx context.Context) error {
 	log.Infof("Logging into %v as %v", d.registry.ServerAddress, d.registry.User.Name)
 
