@@ -2,15 +2,39 @@ package driver
 
 import (
 	"fmt"
+	"strings"
 	"tugboat/internal/pkg/reference"
 
 	"github.com/pkg/errors"
 )
 
 func GenerateUri(registry string, namespace string, tag string, official bool, archOption reference.ArchOption) (*reference.Reference, error) {
-	uri, err := reference.NewUri(fmt.Sprintf("%s/%s", namespace, tag), &reference.UriOptions{
+	image := fmt.Sprintf("%s/%s", namespace, tag)
+	s := strings.Split(tag, "/")
+	if len(s) == 3 {
+		image = tag
+	}
+	uri, err := reference.NewUri(image, &reference.UriOptions{
 		Registry:   registry,
 		Official:   official,
+		ArchOption: archOption,
+	})
+	if err != nil {
+		return nil, errors.Errorf("%v", err)
+	}
+	return uri, nil
+}
+
+func GenerateUriWithArch(registry string, namespace string, tag string, official bool, archOption reference.ArchOption, architecture string) (*reference.Reference, error) {
+	image := fmt.Sprintf("%s/%s", namespace, tag)
+	s := strings.Split(tag, "/")
+	if len(s) == 3 {
+		image = tag
+	}
+	uri, err := reference.NewUri(image, &reference.UriOptions{
+		Registry:   registry,
+		Official:   official,
+		Arch:       architecture,
 		ArchOption: archOption,
 	})
 	if err != nil {

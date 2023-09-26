@@ -105,12 +105,7 @@ func (d *DockerDriver) PullImage(ctx context.Context, image string) (io.ReadClos
 }
 
 func (d *DockerDriver) PullImageWithArch(ctx context.Context, image string, architecture string) (io.ReadCloser, error) {
-	uri, err := reference.NewUri(image, &reference.UriOptions{
-		Registry:   d.registry.ServerAddress,
-		Official:   d.Official,
-		Arch:       architecture,
-		ArchOption: reference.ArchOption(d.ArchitectureTag),
-	})
+	uri, err := d.GetUriWithArch(image, architecture)
 	if err != nil {
 		return nil, err
 	}
@@ -177,12 +172,7 @@ func (d *DockerDriver) PushImage(ctx context.Context, image string) (io.ReadClos
 }
 
 func (d *DockerDriver) PushImageWithArch(ctx context.Context, image string, architecture string) (io.ReadCloser, error) {
-	uri, err := reference.NewUri(image, &reference.UriOptions{
-		Registry:   d.registry.ServerAddress,
-		Official:   d.Official,
-		Arch:       architecture,
-		ArchOption: reference.ArchOption(d.ArchitectureTag),
-	})
+	uri, err := d.GetUriWithArch(image, architecture)
 	if err != nil {
 		return nil, err
 	}
@@ -338,6 +328,15 @@ func (d *DockerDriver) RemoveManifest(ctx context.Context, manifestLists []strin
 
 func (d *DockerDriver) GetUri(tag string) (*reference.Reference, error) {
 	uri, err := driver.GenerateUri(d.registry.ServerAddress, d.registry.Namespace, tag, d.Official, reference.ArchOption(d.ArchitectureTag))
+	if err != nil {
+		return nil, err
+	}
+
+	return uri, nil
+}
+
+func (d *DockerDriver) GetUriWithArch(tag string, arch string) (*reference.Reference, error) {
+	uri, err := driver.GenerateUriWithArch(d.registry.ServerAddress, d.registry.Namespace, tag, d.Official, reference.ArchOption(d.ArchitectureTag), arch)
 	if err != nil {
 		return nil, err
 	}
