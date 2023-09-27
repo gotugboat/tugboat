@@ -40,7 +40,7 @@ func Tag(ctx context.Context, d driver.ImageBuilderPusher, opts TagOptions) erro
 		}
 
 		for _, targetTag := range opts.Tags {
-			taggedUri, err := d.TagImage(ctx, opts.SourceImage, targetTag)
+			taggedUri, err := d.TagImageWithArch(ctx, opts.SourceImage, targetTag, arch)
 			if err != nil {
 				return err
 			}
