@@ -19,6 +19,7 @@ type ImagePusher interface {
 	PushImage(ctx context.Context, image string) (io.ReadCloser, error)
 	PushImageWithArch(ctx context.Context, image string, architecture string) (io.ReadCloser, error)
 	TagImage(ctx context.Context, sourceImage string, targetTag string) (string, error)
+	TagImageWithArch(ctx context.Context, sourceImage string, targetTag string, architecture string) (string, error)
 }
 
 // ImageBuilderPusher represents the functionality for building and pushing container images

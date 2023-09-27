@@ -234,6 +234,31 @@ func (d *DockerDriver) TagImage(ctx context.Context, sourceImage string, targetT
 	return targetUri.Remote(), nil
 }
 
+func (d *DockerDriver) TagImageWithArch(ctx context.Context, sourceImage string, targetTag string, architecture string) (string, error) {
+	sourceUri, err := d.GetUriWithArch(sourceImage, architecture)
+	if err != nil {
+		return "", err
+	}
+
+	targetImage := fmt.Sprintf("%v:%v", sourceUri.ShortName(), targetTag)
+	targetUri, err := d.GetUriWithArch(targetImage, architecture)
+	if err != nil {
+		return "", err
+	}
+
+	log.Infof("Tagging %v as %v", sourceUri.Remote(), targetUri.Remote())
+
+	if d.DryRun {
+		return targetUri.Remote(), nil
+	}
+
+	if err := d.client.ImageTag(ctx, sourceUri.Remote(), targetUri.Remote()); err != nil {
+		return "", err
+	}
+
+	return targetUri.Remote(), nil
+}
+
 func (d *DockerDriver) CreateManifest(ctx context.Context, opts driver.ManifestCreateOptions) (io.ReadCloser, error) {
 	// login to the registry
 	if err := d.login(ctx); err != nil {
