@@ -6,9 +6,9 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"slices"
 	"strings"
 
+	"tugboat/internal/pkg/slices"
 	"tugboat/internal/types"
 
 	"github.com/docker/docker/pkg/jsonmessage"

@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
-	"slices"
 	"strings"
 	"tugboat/internal/driver"
 	"tugboat/internal/pkg/reference"
+	"tugboat/internal/pkg/slices"
 	"tugboat/internal/registry"
 	"tugboat/internal/term"
 
