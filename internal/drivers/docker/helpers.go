@@ -16,6 +16,7 @@ import (
 
 	"github.com/docker/cli/cli/command/image/build"
 	"github.com/docker/docker/api/types"
+	registrytypes "github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/docker/docker/pkg/idtools"
 	"github.com/pkg/errors"
@@ -269,7 +270,7 @@ func imageBuildOptions(buildUris []*reference.Reference, opts driver.BuildOption
 
 // Returns base64 encoded registry credentials
 func encodeRegistryCredentials(registry *registry.Registry) (string, error) {
-	authConfig := types.AuthConfig{
+	authConfig := registrytypes.AuthConfig{
 		Username:      registry.User.Name,
 		Password:      registry.User.Password,
 		ServerAddress: registry.ServerAddress,
