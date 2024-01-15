@@ -35,7 +35,7 @@ func Build(ctx context.Context, d driver.ImageBuilderPusher, opts BuildOptions) 
 	if output != nil {
 		defer output.Close()
 
-		if err := term.DisplayResponse(output); err != nil {
+		if err := term.DisplayOutput(output); err != nil {
 			return err
 		}
 	}
@@ -50,7 +50,7 @@ func Build(ctx context.Context, d driver.ImageBuilderPusher, opts BuildOptions) 
 			if pushOutput != nil {
 				defer pushOutput.Close()
 
-				if err := term.DisplayResponse(pushOutput); err != nil {
+				if err := term.DisplayOutput(pushOutput); err != nil {
 					return err
 				}
 			}
