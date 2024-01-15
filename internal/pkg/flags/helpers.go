@@ -5,9 +5,9 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
-	"tugboat/internal/pkg/slices"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
