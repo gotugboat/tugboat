@@ -12,6 +12,7 @@ import (
 	"tugboat/internal/pkg/reference"
 	"tugboat/internal/pkg/slices"
 	"tugboat/internal/registry"
+	"tugboat/internal/term"
 
 	"github.com/docker/cli/cli/command/image/build"
 	"github.com/docker/docker/api/types"
@@ -24,6 +25,55 @@ import (
 var ErrDockerLogin = errors.New("docker login error")
 var ErrDockerLogout = errors.New("docker logout error")
 var ErrCommandFailure = errors.New("command execution failed")
+
+func buildImage(ctx context.Context, references []*reference.Reference, isOfficial bool, isDryRun bool, isDebug bool, archOption string, opts driver.BuildOptions) (io.ReadCloser, error) {
+	arguments, err := getBuildArgs(references, isOfficial, archOption, opts)
+	if err != nil {
+		return nil, err
+	}
+	cmd := getCommand(arguments)
+
+	log.Infof("Building %s using %s/%s", references[0].Remote(), opts.Context, opts.Dockerfile)
+	log.Debugf("command: %v", cmd)
+
+	if isDryRun {
+		return nil, nil
+	}
+
+	outputStream, err := term.StreamCommand(cmd, isDryRun, isDebug)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return nil, err
+	}
+
+	return outputStream, nil
+}
+
+func getBuildArgs(refs []*reference.Reference, isOfficial bool, archOption string, opts driver.BuildOptions) ([]string, error) {
+	args := []string{"build"}
+
+	for _, tag := range refs {
+		args = append(args, "-t", tag.Remote())
+	}
+
+	args = append(args, "-f", fmt.Sprintf("%s/%s", opts.Context, opts.Dockerfile))
+
+	for _, buildArg := range opts.BuildArgs {
+		args = append(args, "--build-arg", buildArg)
+	}
+
+	if opts.NoCache {
+		args = append(args, "--no-cache")
+	}
+
+	if opts.Pull {
+		args = append(args, "--pull")
+	}
+
+	args = append(args, opts.Context)
+
+	return args, nil
+}
 
 func createManifest(ctx context.Context, reference *reference.Reference, supportedArchitectures []string, isOfficial bool, archOption string, isDryRun bool, isDebug bool) error {
 	log.Infof("Creating Manifest for %v", reference.Remote())
@@ -79,8 +129,8 @@ func annotateManifest(ctx context.Context, reference *reference.Reference, suppo
 	return nil
 }
 
-func getAnnotateCommands(ref *reference.Reference, supportedArchitectures []string, isOfficial bool, archOption string) ([]*Command, error) {
-	var annotateCommands []*Command
+func getAnnotateCommands(ref *reference.Reference, supportedArchitectures []string, isOfficial bool, archOption string) ([]*term.Command, error) {
+	var annotateCommands []*term.Command
 	baseArgs := []string{"manifest", "annotate", ref.Remote()}
 
 	for _, arch := range supportedArchitectures {
@@ -233,19 +283,14 @@ func encodeRegistryCredentials(registry *registry.Registry) (string, error) {
 }
 
 // Helper functions
-type Command struct {
-	Command string
-	Args    []string
-}
-
-func getCommand(args []string) *Command {
-	return &Command{
+func getCommand(args []string) *term.Command {
+	return &term.Command{
 		Command: "docker",
 		Args:    args,
 	}
 }
 
-func executeCommand(cmd *Command, isDryRun bool, isDebug bool) error {
+func executeCommand(cmd *term.Command, isDryRun bool, isDebug bool) error {
 
 	if err := validateCommand(cmd); err != nil {
 		return err
@@ -284,7 +329,7 @@ func executeCommand(cmd *Command, isDryRun bool, isDebug bool) error {
 }
 
 // validateCommand ensures that the command only contains expected commands so unexpected programs are not run
-func validateCommand(cmd *Command) error {
+func validateCommand(cmd *term.Command) error {
 	allowedCommands := []string{"docker"}
 	disallowedCharacters := []string{";", "|", "&"}
 

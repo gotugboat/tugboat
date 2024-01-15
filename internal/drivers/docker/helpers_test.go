@@ -7,6 +7,7 @@ import (
 	"tugboat/internal/driver"
 	"tugboat/internal/pkg/reference"
 	"tugboat/internal/registry"
+	"tugboat/internal/term"
 )
 
 var (
@@ -72,7 +73,7 @@ func Test_validateCommand(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := &Command{
+			cmd := &term.Command{
 				Command: tc.command,
 				Args:    tc.args,
 			}
