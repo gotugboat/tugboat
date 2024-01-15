@@ -13,7 +13,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -45,34 +44,12 @@ func NewDockerDriver(opts driver.DriverOptions) (*DockerDriver, error) {
 }
 
 func (d *DockerDriver) BuildImage(ctx context.Context, opts driver.BuildOptions) (io.ReadCloser, error) {
-	var buildContext io.ReadCloser
-	var err error
-
-	if buildContext == nil && !d.DryRun {
-		buildContext, err = packageBuildContext(opts.Context, opts.Dockerfile)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	buildUris, err := driver.GenerateAllUris(d.registry.ServerAddress, d.registry.Namespace, opts.Tags, d.Official, reference.ArchOption(d.ArchitectureTag))
 	if err != nil {
 		return nil, err
 	}
-	buildOpts := imageBuildOptions(buildUris, opts)
 
-	log.Infof("Building %s using %s/%s", buildOpts.Tags[0], opts.Context, opts.Dockerfile)
-
-	if d.DryRun {
-		return nil, nil
-	}
-
-	response, err := d.client.ImageBuild(ctx, buildContext, buildOpts)
-	if err != nil {
-		return nil, errors.Wrap(err, "image build error")
-	}
-
-	return response.Body, nil
+	return buildImage(ctx, buildUris, d.Official, d.DryRun, d.Debug, d.ArchitectureTag, opts)
 }
 
 func (d *DockerDriver) PullImage(ctx context.Context, image string) (io.ReadCloser, error) {
